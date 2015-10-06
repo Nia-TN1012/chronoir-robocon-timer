@@ -51,6 +51,8 @@ CRTimerフォルダ
 * 本ソフトウェアは全画面で表示します。ディスプレイの解像度は1280×768以上を推奨します。
 
 ## インストール
+ダウンロード : [Chronoir Robocon Timer](https://github.com/Nia-TN1012/chronoir-robocon-timer/blob/master/Apps/Chronoir%20Robocon%20Timer.zip?raw=true)
+
 インストールの必要はありません。任意の場所に解凍しておいてください。
 
 ## アンインストール
