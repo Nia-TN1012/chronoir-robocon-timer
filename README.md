@@ -18,7 +18,7 @@ Chronoir Robocon Timerはロボコンなどで使用できるタイマーです�
 |著作権者|智中 ニア（ Nia Tomonaka ）|
 |再配布|可（【再配布】欄を参照してください ）|
 |転載|可|
-|ホームページ|http://myoga-tn.expressweb.jp/|
+|ホームページ|http://chronoir.net/|
 |GitHub|https://github.com/Nia-TN1012/chronoir-robocon-timer
 |Mailto|nia1012-tmnk(A/)outlook.jp（(A/)を@に変えてください。）
 |Twitter|[@nia_tn1012](https://twitter.com/nia_tn1012)|
