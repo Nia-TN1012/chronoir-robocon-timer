@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- チーム名リスト -->
-<teams>
-  <team name="Team 1" group="Team Group" />
-  <team name="Team 2" group="Team Group" />
-  <team name="Team 3" group="Team Group" />
-  <team name="Team 4" group="Team Group" />
-  <team name="Team 5" group="Team Group" />
-</teams>
