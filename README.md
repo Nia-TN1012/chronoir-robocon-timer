@@ -18,7 +18,7 @@ Chronoir Robocon Timerはロボコンなどで使用できるタイマーです�
 |著作権者|智中 ニア（ Nia Tomonaka ）|
 |再配布|可（【再配布】欄を参照してください ）|
 |転載|可|
-|ホームページ|http://Chronoir.net/|
+|ホームページ|http://chronoir.net/|
 |GitHub|https://github.com/Nia-TN1012/chronoir-robocon-timer
 |Mailto|nia1012-tmnk(A/)outlook.jp（(A/)を@に変えてください。）
 |Twitter|[@nia_tn1012](https://twitter.com/nia_tn1012)|
@@ -30,6 +30,7 @@ CRTimerフォルダ
 
 |ファイル名|概要|
 |:---|:---|
+|ScoreSheet|スコアシートが入ったフォルダーです。|
 |CRTimer.exe|実行ファイルです。|
 |CRTimer.exe.config||
 |teams.xml|チーム名リストファイルです。|
@@ -50,8 +51,9 @@ CRTimerフォルダ
 * Windows Vista( SP1以前 )及びWindows XP以前では動作対象外です。
 * 本ソフトウェアは全画面で表示します。ディスプレイの解像度は1280×768以上を推奨します。
 
-## インストール
-インストールの必要はありません。任意の場所に解凍しておいてください。
+## ダウンロード＆インストール
+「[Chronoir Robocon Timer.zip](http://chronoir.net/wp-content/uploads/Apps/CRT/Chronoir%20Robocon%20Timer.zip)」をダウンロードし、任意の場所に解凍します。
+インストールは不要です。
 
 ## アンインストール
 レジストリは使用しておりません。解凍したファイルをフォルダごと削除してください。
