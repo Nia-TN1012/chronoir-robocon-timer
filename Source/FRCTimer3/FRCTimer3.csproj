@@ -68,6 +68,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\ComboBoxDataTemplateSelector.cs" />
+    <Compile Include="Common\MVVMBase.cs" />
+    <Compile Include="View\ExComboBox.cs" />
     <Compile Include="View\TeamInfoEditDialog.xaml.cs">
       <DependentUpon>TeamInfoEditDialog.xaml</DependentUpon>
     </Compile>

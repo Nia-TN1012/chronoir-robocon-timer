@@ -161,6 +161,32 @@ namespace FRCTimer3 {
 	}
 
 	/// <summary>
+	///		タイマーの状態を表します。
+	/// </summary>
+	enum TimerState {
+		/// <summary>
+		///		自動機発進のリミット
+		/// </summary>
+		AutoMachineStartTime,
+		/// <summary>
+		///		通常
+		/// </summary>
+		Normal,
+		/// <summary>
+		///		残り10秒
+		/// </summary>
+		Last10sec,
+		/// <summary>
+		///		残り3秒
+		/// </summary>
+		Last3sec,
+		/// <summary>
+		///		停止
+		/// </summary>
+		Stop
+	}
+
+	/// <summary>
 	///		Chronoir Robocon Timerで鳴らす効果音の種類を表します。
 	/// </summary>
 	enum FRCSoundEffectType {
@@ -209,30 +235,6 @@ namespace FRCTimer3 {
 	///		Chronoir Robocon Timerで鳴らすイベントを処理します。
 	/// </summary>
 	delegate void FRCSoundEffectTypeEventHandler( object sender, FRCSoundEffectTypeEventArgs e );
-
-	/// <summary>
-	///		コールバックメソッドの情報を持つイベント引数です。
-	/// </summary>
-	class CallbackEventArgs : EventArgs {
-
-		/// <summary>
-		///		コールバックのメソッド
-		/// </summary>
-		public Action Callback { get; private set; }
-
-		/// <summary>
-		///		CallbackEventArgsの新しいインスタンスを生成します。
-		/// </summary>
-		/// <param name="cb">コールバックのメソッド</param>
-		public CallbackEventArgs( Action cb ) {
-			Callback = cb;
-		}
-	}
-
-	/// <summary>
-	///		イベントを処理し、コールバックを呼び出します。
-	/// </summary>
-	delegate void CallbackEventHandler( object sender, CallbackEventArgs e );
 
 	/// <summary>
 	///		確認メッセージとコールバックメソッドの情報を持つイベント引数です。

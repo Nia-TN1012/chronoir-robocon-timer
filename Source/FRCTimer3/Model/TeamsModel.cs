@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows.Data;
 using System.Linq;
 using System.Xml.Linq;
@@ -11,36 +9,38 @@ using System.Xml.Linq;
 namespace FRCTimer3 {
 
 	/// <summary>
-	///		チーム名とグループ名を格納する構造体です。
+	///		チーム名とグループ名を格納する構造体を定義します。
 	/// </summary>
 	public struct TeamInfo {
 		/// <summary>
-		///		チーム名
+		///		チーム名を取得・設定します。
 		/// </summary>
 		public string TeamName { get; set; }
 		/// <summary>
-		///		グループ名
+		///		グループ名を取得・設定します。
 		/// </summary>
 		public string GroupName { get; set; }
 	}
 
 	/// <summary>
-	///		チーム名リストのModelです。
+	///		チーム名リストのModelクラスを定義します。
 	/// </summary>
-	class TeamsModel : INotifyPropertyChanged {
+	class TeamsModel : NotifyPropertyChangedHelper {
 
 		/// <summary>
-		///		チーム名を格納するリストです。
+		///		チーム名を格納するリストを取得します。
 		/// </summary>
-		public ObservableCollection<TeamInfo> Teams { get; private set; } = new ObservableCollection<TeamInfo>();
+		public ObservableCollection<TeamInfo> Teams { get; private set; } =
+			new ObservableCollection<TeamInfo>();
 
 		/// <summary>
-		///		チーム名リストファイルの名前です。
+		///		チーム名リストファイルを取得します。
 		/// </summary>
-		public static string FileName { get; } = @"teams.xml";
+		public static string FileName { get; } =
+			@"teams.xml";
 
 		/// <summary>
-		///		TeamsModelの新しいインスタンスを生成します。
+		///		TeamsModelクラスの新しいインスタンスを生成します。
 		/// </summary>
 		public TeamsModel() {
 			BindingOperations.EnableCollectionSynchronization( Teams, new object() );
@@ -163,35 +163,18 @@ namespace FRCTimer3 {
 		}
 
 		/// <summary>
-		///		プロパティを変更した時に発生するイベントハンドラです。
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		/// <summary>
-		///		チーム名リストを読み込んだ後に発生するイベントハンドラです。
+		///		チーム名リストを読み込んだ後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<LoadTeamsListResult, bool, bool> LoadTeamsListCompleted;
 
 		/// <summary>
-		///		チーム名リストを初期化した後に発生するイベントハンドラです。
+		///		チーム名リストを初期化した後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<SaveTeamsListResult, bool, bool> ResetTeamsListCompleted;
 
 		/// <summary>
-		///		チーム名リストを保存した後に発生するイベントハンドラです。
+		///		チーム名リストを保存した後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<SaveTeamsListResult, bool, bool> SaveTeamsListCompleted;
-
-		/// <summary>
-		///		プロパティの変更を通知します。
-		/// </summary>
-		/// <param name="propertyName">プロパティ名（ 省略時、呼び出し元のプロパティ名 ）</param>
-		private void NotifyPropertyChanged( [CallerMemberName]string propertyName = null ) {
-			// CallerMemberNameの属性を付けた文字列型変数は省略時、
-			// 呼び出し元のメンバーの名前が入ります。
-			// 呼び出し元ののプロパティの変更通知の場合、引数を省略することができます。
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-		}
-
 	}
 }

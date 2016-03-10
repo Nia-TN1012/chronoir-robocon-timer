@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -12,40 +11,14 @@ using System.Diagnostics;
 namespace FRCTimer3 {
 
 	/// <summary>
-	///		タイマーの状態を表します。
+	///		ViewModelクラスを定義します。
 	/// </summary>
-	enum TimerState {
-		/// <summary>
-		///		自動機発進のリミット
-		/// </summary>
-		AutoMachineStartTime,
-		/// <summary>
-		///		通常
-		/// </summary>
-		Normal,
-		/// <summary>
-		///		残り10秒
-		/// </summary>
-		Last10sec,
-		/// <summary>
-		///		残り3秒
-		/// </summary>
-		Last3sec,
-		/// <summary>
-		///		停止
-		/// </summary>
-		Stop
-	}
-
-	/// <summary>
-	///		メインのViewModelです。
-	/// </summary>
-	class MainViewModel : INotifyPropertyChanged {
+	class MainViewModel : ViewModelBase {
 
 		/// <summary>
-		///		Chronoir Robocon Timerの状態と画面に表示するメッセージを関連付けます。
+		///		Chronoir Robocon Timerの状態と画面に表示するメッセージのペアのリストを表します。
 		/// </summary>
-		Dictionary<FRCTimerState, string> message = new Dictionary<FRCTimerState, string> {
+		private Dictionary<FRCTimerState, string> message = new Dictionary<FRCTimerState, string> {
 			[FRCTimerState.TeamSelect] = "Team Select",
 			[FRCTimerState.SettingReady] = "Setting Ready ?",
 			[FRCTimerState.SettingTime] = "Setting Time",
@@ -60,32 +33,32 @@ namespace FRCTimer3 {
 		/// <summary>
 		///		タイマーの状態を表します。
 		/// </summary>
-		TimerState timerState = TimerState.Stop;
+		private TimerState timerState = TimerState.Stop;
 
 		/// <summary>
 		///		DispatcherTimerは一定間隔ごとにイベントを発生させるクラスです。
 		/// </summary>
-		DispatcherTimer dpTimer;
+		private DispatcherTimer dpTimer;
 
 		/// <summary>
-		///		アプリの情報を表します。
+		///		アプリの情報を取得します。
 		/// </summary>
 		public FileVersionInfo AppVer { get; private set; }
 
 		#region Model
 
 		/// <summary>
-		///		TeamsModel
+		///		TeamsModelクラスを表します。
 		/// </summary>
 		private TeamsModel teamsModel = new TeamsModel();
 
 		/// <summary>
-		///		TimerModel
+		///		TimerModelクラスを表します。
 		/// </summary>
 		private TimerModel timerModel = new TimerModel();
 
 		/// <summary>
-		///		FRCCommandSetModel
+		///		FRCCommandSetModelクラスを表します。
 		/// </summary>
 		private FRCCommandSetModel frcCommandSetModel;
 
@@ -96,34 +69,35 @@ namespace FRCTimer3 {
 		/// <summary>
 		///		SettingReady / GameReady おいて、残り3秒を表します。
 		/// </summary>
-		private static TimeSpan ReadyLast3Seconds { get; set; }
+		private static TimeSpan ReadyLast3Seconds;
 
 		/// <summary>
 		///		SettingTimeにおいて、残り10秒を表します。
 		/// </summary>
-		private static TimeSpan SettingLast10Seconds { get; set; }
+		private static TimeSpan SettingLast10Seconds;
 
 		/// <summary>
 		///		SettingTimeにおいて、残り3秒を表します。
 		/// </summary>
-		private static TimeSpan SettingLast3Seconds { get; set; }
+		private static TimeSpan SettingLast3Seconds;
 
 		/// <summary>
 		///		PlayTimeにおいて、残り10秒を表します。
 		/// </summary>
-		private static TimeSpan PlayLast10Seconds { get; set; }
+		private static TimeSpan PlayLast10Seconds;
 
 		/// <summary>
 		///		GameTimeにおいて、残り3秒を表します。
 		/// </summary>
-		private static TimeSpan PlayLast3Seconds { get; set; }
+		private static TimeSpan PlayLast3Seconds;
 
 		#endregion
 
 		/// <summary>
 		///		Chronoir Robocon Timerの現在の状態を取得します。
 		/// </summary>
-		public FRCTimerState NowState { get; private set; } = FRCTimerState.TeamSelect;
+		public FRCTimerState NowState { get; private set; } =
+			FRCTimerState.TeamSelect;
 
 		/// <summary>
 		///		MainViewModelの新しいインスタンスを生成します。
@@ -131,7 +105,7 @@ namespace FRCTimer3 {
 		public MainViewModel() {
 			// TeamsModelのイベントハンドラに処理を登録します。
 			teamsModel.PropertyChanged += ( sender, e ) =>
-				PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( e.PropertyName ) );
+				PropertyChangedFromThis?.Invoke( this, new PropertyChangedEventArgs( e.PropertyName ) );
 			teamsModel.LoadTeamsListCompleted += ( sender, e ) => {
 				RedTeamIndex = BlueTeamIndex = -1;
 				LoadTeamsListCompleted?.Invoke(
@@ -139,7 +113,7 @@ namespace FRCTimer3 {
 					new NotifyResultEventArgs<LoadTeamsListResult, bool, bool>(
 						e.Result,
 						// 読み込みに成功したら、チーム名選択のコンボボックスに反映させます。
-						( _ ) => {
+						_ => {
 							RedTeamIndex = 0;
 							BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
 							NotifyPropertyChanged( nameof( TeamsList ) );
@@ -147,7 +121,7 @@ namespace FRCTimer3 {
 							NotifyPropertyChanged( nameof( BlueTeamIndex ) );
 						},
 						// 読み込みに失敗したら、初期値に設定します。
-						( _ ) => teamsModel.ResetTeamsList( _ )
+						_ => teamsModel.ResetTeamsList( _ )
 					)
 				);
 			};
@@ -157,7 +131,7 @@ namespace FRCTimer3 {
 					new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
 						e.Result,
 						// 初期化したら、チーム名選択のコンボボックスに反映させます。
-						( _ ) => {
+						_ => {
 							RedTeamIndex = 0;
 							BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
 							NotifyPropertyChanged( nameof( TeamsList ) );
@@ -173,7 +147,7 @@ namespace FRCTimer3 {
 					new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
 						e.Result,
 						// 保存に成功したら、チーム名選択のコンボボックスに反映させます。
-						( _ ) => {
+						_ => {
 							RedTeamIndex = 0;
 							BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
 							NotifyPropertyChanged( nameof( TeamsList ) );
@@ -189,7 +163,7 @@ namespace FRCTimer3 {
 					this,
 					new NotifyResultEventArgs<LoadSettingsResult, bool, bool>(
 						e.Result,
-						( _ ) => {
+						_ => {
 							NotifyPropertyChanged( nameof( DisplayTimer ) );
 							ReadyLast3Seconds = TimerModel.ReadyTime - TimeSpan.FromSeconds( 3 );
 							SettingLast10Seconds = TimerModel.SettingTime - TimeSpan.FromSeconds( 10 );
@@ -222,6 +196,7 @@ namespace FRCTimer3 {
 				new CommandButton( "チーム名リストを保存する (_P)", CMDApplyTeamsList )
 			);
 
+			TeamsListSet = new ObservableCollection<TeamInfo>();
 			AppVer = FileVersionInfo.GetVersionInfo( System.Reflection.Assembly.GetExecutingAssembly().Location );
 		}
 
@@ -320,7 +295,8 @@ namespace FRCTimer3 {
 		/// <remarks>
 		///		チーム名リストのEnabledにバインドしています。
 		/// </remarks>
-		public bool CanSelectTeam => NowState == FRCTimerState.TeamSelect;
+		public bool CanSelectTeam =>
+			NowState == FRCTimerState.TeamSelect;
 
 		/// <summary>
 		///		DispatcherTimerでのイベント処理です。
@@ -414,52 +390,39 @@ namespace FRCTimer3 {
 		#region イベント関連
 
 		/// <summary>
-		///		プロパティを変更した時に発生するイベントハンドラです。
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		/// <summary>
-		///		チーム名リストを読み込んだ後に発生するイベントハンドラです。
+		///		チーム名リストを読み込んだ後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<LoadTeamsListResult, bool, bool> LoadTeamsListCompleted;
 
 		/// <summary>
-		///		時間定義ファイをを読み込んだ後に発生するイベントハンドラです。
+		///		時間定義ファイをを読み込んだ後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<LoadSettingsResult, bool, bool> LoadSettingsCompleted;
 
 		/// <summary>
-		///		チーム名リストを初期化した後に発生するイベントハンドラです。
+		///		チーム名リストを初期化した後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<SaveTeamsListResult, bool, bool> ResetTeamsListCompleted;
 
 		/// <summary>
-		///		チーム名リストを保存した後に発生するイベントハンドラです。
+		///		チーム名リストを保存した後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<SaveTeamsListResult, bool, bool> SaveTeamsListCompleted;
 
 		/// <summary>
-		///		アプリを終了する時に発生するイベントハンドラです。
+		///		アプリを終了する時に発生します。
 		/// </summary>
-		public event CallbackEventHandler ExitFRCTimer;
+		public event ComfirmEventHandler ExitFRCTimer;
 
 		/// <summary>
-		///		確認ダイアログを表示する時に発生するイベントハンドラです。
+		///		確認ダイアログを表示する時に発生します。
 		/// </summary>
 		public event ComfirmEventHandler ComfirmAction;
 
 		/// <summary>
-		///		効果音を鳴らす時に発生するイベントハンドラです。
+		///		効果音を鳴らす時に発生します。
 		/// </summary>
 		public event FRCSoundEffectTypeEventHandler PlaySoundEffect;
-
-		/// <summary>
-		///		プロパティの変更を通知します。
-		/// </summary>
-		/// <param name="propertyName">プロパティ名（ 省略時、呼び出し元のプロパティ名 ）</param>
-		private void NotifyPropertyChanged( [CallerMemberName]string propertyName = null ) {
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-		}
 
 		/// <summary>
 		///		アプリのメイン画面で使用しているプロパティの変更をまとめて通知します。
@@ -481,78 +444,6 @@ namespace FRCTimer3 {
 		#region コマンド
 
 		// コマンドオブジェクトは遅延初期化させます。
-
-		/// <summary>
-		///		セッティング開始するコマンド
-		/// </summary>
-		private ICommand cmdStartSetting;
-		/// <summary>
-		///		セッティング開始するコマンドを表します。
-		/// </summary>
-		public ICommand CMDStartSetting => cmdStartSetting ?? ( cmdStartSetting = new StartSettingCommand( this ) );
-
-		/// <summary>
-		///		セッティングスキップするコマンド
-		/// </summary>
-		private ICommand cmdSkipSetting;
-		/// <summary>
-		///		セッティングスキップするコマンドを表します。
-		/// </summary>
-		public ICommand CMDSkipSetting => cmdSkipSetting ?? ( cmdSkipSetting = new SkipSettingCommand( this ) );
-
-		/// <summary>
-		///		試合開始するコマンド
-		/// </summary>
-		private ICommand cmdStartPlaying;
-		/// <summary>
-		///		試合開始するコマンドを表します。
-		/// </summary>
-		public ICommand CMDStartPlaying => cmdStartPlaying ?? ( cmdStartPlaying = new StartPlayingCommand( this ) );
-
-		/// <summary>
-		///		セッティング、試合を中止するコマンド
-		/// </summary>
-		private ICommand cmdCancel;
-		/// <summary>
-		///		セッティング、試合を中止するコマンドを表します。
-		/// </summary>
-		public ICommand CMDCancel => cmdCancel ?? ( cmdCancel = new CancelCommand( this ) );
-
-		/// <summary>
-		///		チーム名選択に戻るコマンド
-		/// </summary>
-		private ICommand cmdBackToTeamSelect;
-		/// <summary>
-		///		チーム名選択に戻るコマンドを表します。
-		/// </summary>
-		public ICommand CMDBackToTeamSelect => cmdBackToTeamSelect ?? ( cmdBackToTeamSelect = new BackToTeamSelectCommand( this ) );
-
-		/// <summary>
-		///		Victory画面に移動するコマンド
-		/// </summary>
-		private ICommand cmdToVictory;
-		/// <summary>
-		///		Victory画面に移動するコマンドを表します。
-		/// </summary>
-		public ICommand CMDToVictory => cmdToVictory ?? ( cmdToVictory = new VictoryCommand( this ) );
-
-		/// <summary>
-		///		設定画面に移動するコマンド
-		/// </summary>
-		private ICommand cmdConfiguration;
-		/// <summary>
-		///		設定画面に移動するコマンドを表します。
-		/// </summary>
-		public ICommand CMDConfiguration => cmdConfiguration ?? ( cmdConfiguration = new OpenFRCSettingCommand( this ) );
-
-		/// <summary>
-		///		アプリ終了のコマンド
-		/// </summary>
-		private ICommand cmdAppClose;
-		/// <summary>
-		///		アプリ終了のコマンドを表します。
-		/// </summary>
-		public ICommand CMDAppClose => cmdAppClose ?? ( cmdAppClose = new AppCloseCommand( this ) );
 
 		/*
 		 *		TeamSelect -> セッティングスタート、セッティングをスキップ、About、終了
@@ -581,47 +472,15 @@ namespace FRCTimer3 {
 		#region StartSettingCommand
 
 		/// <summary>
-		///		セッティングを開始するコマンドです。
+		///		セッティング開始するコマンド
 		/// </summary>
-		private class StartSettingCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		StartSettingCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public StartSettingCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.StartSetting();
-			}
-
-		}
+		private ICommand cmdStartSetting;
+		/// <summary>
+		///		セッティング開始するコマンドを表します。
+		/// </summary>
+		public ICommand CMDStartSetting =>
+			cmdStartSetting ??
+			( cmdStartSetting = new ActionCommand( this, p => StartSetting() ) );
 
 		/// <summary>
 		///		セッティングを開始します。
@@ -640,45 +499,18 @@ namespace FRCTimer3 {
 		#region SkipSettingCommand
 
 		/// <summary>
-		///		セッティングをスキップし、試合準備に移行するコマンドです。
+		///		セッティングスキップするコマンド
 		/// </summary>
-		private class SkipSettingCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		SkipSettingCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public SkipSettingCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-				CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "セッティングをスキップし、試合準備画面に移りますか？", mainVM.SkipSetting ) );
-			}
-		}
+		private ICommand cmdSkipSetting;
+		/// <summary>
+		///		セッティングスキップするコマンドを表します。
+		/// </summary>
+		public ICommand CMDSkipSetting =>
+			cmdSkipSetting ??
+			( cmdSkipSetting = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "セッティングをスキップし、試合準備画面に移りますか？", SkipSetting ) )
+			) );
 
 		/// <summary>
 		///		セッティングをスキップします。
@@ -694,48 +526,17 @@ namespace FRCTimer3 {
 		#region StartPlayingCommand
 
 		/// <summary>
-		///		試合開始するコマンドです。
+		///		試合開始するコマンド
 		/// </summary>
-		private class StartPlayingCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		StartPlayingCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public StartPlayingCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.StartPlay();
-			}
-		}
+		private ICommand cmdStartPlaying;
+		/// <summary>
+		///		試合開始するコマンドを表します。
+		/// </summary>
+		public ICommand CMDStartPlaying =>
+			cmdStartPlaying ?? ( cmdStartPlaying = new ActionCommand( this, p => StartPlay() ) );
 
 		/// <summary>
-		///		セッティングを開始します。
+		///		試合を開始します。
 		/// </summary>
 		private void StartPlay() {
 			NowState = FRCTimerState.PlayReady;
@@ -751,49 +552,25 @@ namespace FRCTimer3 {
 		#region CancelCommand
 
 		/// <summary>
-		///		セッティング・試合を中止するコマンドです。
+		///		セッティング、試合を中止するコマンド
 		/// </summary>
-		private class CancelCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		CancelCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public CancelCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) {
-				return true;
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				if( mainVM.NowState == FRCTimerState.SettingReady || mainVM.NowState == FRCTimerState.SettingTime )
-					mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "セッティングを中止し、チーム選択に戻りますか？", mainVM.CancelOperation ) );
-				else mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "試合を中止しますか？", mainVM.CancelOperation ) );
-			}
-		}
+		private ICommand cmdCancel;
+		/// <summary>
+		///		セッティング、試合を中止するコマンドを表します。
+		/// </summary>
+		public ICommand CMDCancel =>
+			cmdCancel ??
+			( cmdCancel = new ActionCommand(
+				this,
+				p => {
+					if( NowState == FRCTimerState.SettingReady || NowState == FRCTimerState.SettingTime ) {
+						ComfirmAction?.Invoke( this, new ComfirmEventArgs( "セッティングを中止し、チーム選択に戻りますか？", CancelOperation ) );
+					}
+					else {
+						ComfirmAction?.Invoke( this, new ComfirmEventArgs( "試合を中止しますか？", CancelOperation ) );
+					}
+				}
+			) );
 
 		/// <summary>
 		///		セッティング・試合を中止します。
@@ -823,47 +600,25 @@ namespace FRCTimer3 {
 		#region BackToTeamSelectCommand
 
 		/// <summary>
-		///		チーム選択に戻るコマンドです。
+		///		チーム名選択に戻るコマンド
 		/// </summary>
-		private class BackToTeamSelectCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		BackToTeamSelectCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public BackToTeamSelectCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				if( mainVM.NowState == FRCTimerState.PlayPrepairing )
-					mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム選択に戻りますか？", mainVM.BackToTeamSelect ) );
-				else mainVM.BackToTeamSelect();
-			}
-		}
+		private ICommand cmdBackToTeamSelect;
+		/// <summary>
+		///		チーム名選択に戻るコマンドを表します。
+		/// </summary>
+		public ICommand CMDBackToTeamSelect =>
+			cmdBackToTeamSelect ??
+			( cmdBackToTeamSelect = new ActionCommand(
+				this,
+				p => {
+					if( NowState == FRCTimerState.PlayPrepairing ) {
+						ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム選択に戻りますか？", BackToTeamSelect ) );
+					}
+					else {
+						BackToTeamSelect();
+					}
+				}
+			) );
 
 		/// <summary>
 		///		チーム選択に戻ります。
@@ -880,45 +635,18 @@ namespace FRCTimer3 {
 		#region VictoryCommand
 
 		/// <summary>
-		///		Victory画面に移行するコマンドです。
+		///		Victory画面に移動するコマンド
 		/// </summary>
-		private class VictoryCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		VictoryCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public VictoryCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "試合終了しますか？", mainVM.ChangeToVictory ) );
-			}
-		}
+		private ICommand cmdToVictory;
+		/// <summary>
+		///		Victory画面に移動するコマンドを表します。
+		/// </summary>
+		public ICommand CMDToVictory =>
+			cmdToVictory ??
+			( cmdToVictory = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "試合終了しますか？", ChangeToVictory ) )
+			) );
 
 		/// <summary>
 		///		Victory画面に移動します。
@@ -940,55 +668,23 @@ namespace FRCTimer3 {
 		#region OpenFRCSettingCommand
 
 		/// <summary>
-		///		FRCSettingを開くコマンドです。
+		///		設定画面に移動するコマンド
 		/// </summary>
-		private class OpenFRCSettingCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		OpenFRCSettingCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public OpenFRCSettingCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラーです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.OpenFRCTimerSetting();
-			}
-		}
+		private ICommand cmdConfiguration;
+		/// <summary>
+		///		設定画面に移動するコマンドを表します。
+		/// </summary>
+		public ICommand CMDConfiguration =>
+			cmdConfiguration ?? ( cmdConfiguration = new ActionCommand( this, p => OpenFRCTimerSetting() ) );
 
 		/// <summary>
 		///		アプリの設定画面に移動します。
 		/// </summary>
 		private void OpenFRCTimerSetting() {
 			NowState = FRCTimerState.FRCTimerSetting;
-			TeamsListSet = new ObservableCollection<TeamInfo>( TeamsList );
-			SelectedTeam = TeamsListSet.Count > 0 ? 0 : -1;
-			NotifyFRCTimerSettingAllPropertyChanged();
-			NotifyPropertyChanged( nameof( SelectedTeam ) );
+			NotifyPropertyChanged( nameof( FRCTimerIsSetting ) );
+			NotifyPropertyChanged( nameof( CommanddSetList ) );
+			RollbackTeamsList();
 		}
 
 		#endregion
@@ -996,45 +692,18 @@ namespace FRCTimer3 {
 		#region AppCloseCommand
 
 		/// <summary>
-		///		アプリを終了するコマンドです。
+		///		アプリ終了のコマンド
 		/// </summary>
-		private class AppCloseCommand : ICommand {
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		AppCloseCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public AppCloseCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ExitFRCTimer?.Invoke( mainVM, new CallbackEventArgs( mainVM.Close ) );
-			}
-		}
+		private ICommand cmdAppClose;
+		/// <summary>
+		///		アプリ終了のコマンドを表します。
+		/// </summary>
+		public ICommand CMDAppClose =>
+			cmdAppClose ??
+			( cmdAppClose = new ActionCommand(
+				this,
+				p => ExitFRCTimer?.Invoke( this, new ComfirmEventArgs( "", Close ) )
+			) );
 
 		/// <summary>
 		///		アプリを終了します。
@@ -1052,33 +721,26 @@ namespace FRCTimer3 {
 		#region アプリの設定
 
 		/// <summary>
-		///		アプリ設定中であるかどうかを表します。
+		///		アプリは設定中であるかどうかを表す値を取得します。
 		/// </summary>
-		public bool FRCTimerIsSetting => NowState == FRCTimerState.FRCTimerSetting;
+		public bool FRCTimerIsSetting =>
+			NowState == FRCTimerState.FRCTimerSetting;
 
 		/// <summary>
-		///		リストビューで選択しているチーム名の位置を表します。
+		///		リストビューで選択しているチーム名の位置を取得・設定します。
 		/// </summary>
 		public int SelectedTeam { get; set; } = -1;
 
 		/// <summary>
-		///		リストビューにバインディングするチーム名リストです。
+		///		リストビューにバインディングするチーム名リストを取得します。
 		/// </summary>
-		public ObservableCollection<TeamInfo> TeamsListSet { get; set; }
-
-		/// <summary>
-		///		アプリの設定画面で使用しているプロパティの変更をまとめて通知します。
-		/// </summary>
-		public void NotifyFRCTimerSettingAllPropertyChanged() {
-			NotifyPropertyChanged( nameof( FRCTimerIsSetting ) );
-			NotifyPropertyChanged( nameof( CommanddSetList ) );
-			NotifyPropertyChanged( nameof( TeamsListSet ) );
-			NotifyPropertyChanged( nameof( SelectedTeam ) );
-		}
+		public ObservableCollection<TeamInfo> TeamsListSet { get; private set; }
 
 		#region コマンド
 
 		#region アプリ下部のボタン用
+
+		#region SaveTeamsListCommand
 
 		/// <summary>
 		///		チーム名リストを保存して戻るコマンド
@@ -1087,149 +749,13 @@ namespace FRCTimer3 {
 		/// <summary>
 		///		チーム名リストを保存して戻るコマンドを表します。
 		/// </summary>
-		public ICommand CMDSaveTeamsList => cmdSaveTeamsList ?? ( cmdSaveTeamsList = new SaveTeamsListCommand( this ) );
-
-		/// <summary>
-		///		チーム名リストを保存せずに戻るコマンド
-		/// </summary>
-		private ICommand cmdCloseSetting;
-		/// <summary>
-		///		チーム名リストを保存せずに戻るコマンドを表します。
-		/// </summary>
-		public ICommand CMDCloseSetting => cmdCloseSetting ?? ( cmdCloseSetting = new CloseSettingCommand( this ) );
-
-		/// <summary>
-		///		チーム名リストを保存するコマンド
-		/// </summary>
-		private ICommand cmdApplyTeamsList;
-		/// <summary>
-		///		チーム名リストを保存するコマンドを表します。
-		/// </summary>
-		public ICommand CMDApplyTeamsList => cmdApplyTeamsList ?? ( cmdApplyTeamsList = new ApplyTeamsListCommand( this ) );
-
-		#endregion
-
-		#region 設定画面のボタン用
-
-		/// <summary>
-		///		チーム名をリストに追加するコマンド
-		/// </summary>
-		private ICommand cmdAddTeam;
-		/// <summary>
-		///		チーム名をリストに追加するコマンドを表します。
-		/// </summary>
-		public ICommand CMDAddTeam => cmdAddTeam ?? ( cmdAddTeam = new AddTeamCommand( this ) );
-
-		/// <summary>
-		///		チーム名を変更するコマンド
-		/// </summary>
-		private ICommand cmdRenameTeam;
-		/// <summary>
-		///		チーム名を変更するコマンドを表します。
-		/// </summary>
-		public ICommand CMDRenameTeam => cmdRenameTeam ?? ( cmdRenameTeam = new RenameTeamCommand( this ) );
-
-		/// <summary>
-		///		チーム名をリストから削除するコマンド
-		/// </summary>
-		private ICommand cmdRemoveTeam;
-		/// <summary>
-		///		チーム名をリストから削除するコマンドを表します。
-		/// </summary>
-		public ICommand CMDRemoveTeam => cmdRemoveTeam ?? ( cmdRemoveTeam = new RemoveTeamCommand( this ) );
-
-		/// <summary>
-		///		チーム名を1つ上に移動するコマンド
-		/// </summary>
-		private ICommand cmdMoveUpTeam;
-		/// <summary>
-		///		チーム名を1つ上に移動するコマンドを表します。
-		/// </summary>
-		public ICommand CMDMoveUpTeam => cmdMoveUpTeam ?? ( cmdMoveUpTeam = new MoveUpTeamCommand( this ) );
-
-		/// <summary>
-		///		チーム名を1つ下に移動するコマンド
-		/// </summary>
-		private ICommand cmdMoveDownTeam;
-		/// <summary>
-		///		チーム名を1つ下に移動するコマンドを表します。
-		/// </summary>
-		public ICommand CMDMoveDownTeam => cmdMoveDownTeam ?? ( cmdMoveDownTeam = new MoveDownTeamCommand( this ) );
-
-		/// <summary>
-		///		グループ名ごとにソートするコマンド
-		/// </summary>
-		private ICommand cmdSortTeamsByGroup;
-		/// <summary>
-		///		グループ名ごとにソートするコマンドを表します。
-		/// </summary>
-		public ICommand CMDSortTeamsByGroup => cmdSortTeamsByGroup ?? ( cmdSortTeamsByGroup = new SortTeamsByGroupCommand( this ) );
-
-		/// <summary>
-		///		チーム名リストを元に戻すコマンド
-		/// </summary>
-		private ICommand cmdRollbackTeamsList;
-		/// <summary>
-		///		チーム名リストを元に戻すコマンドを表します。
-		/// </summary>
-		public ICommand CMDRollbackTeamsList => cmdRollbackTeamsList ?? ( cmdRollbackTeamsList = new RollbackTeamsListCommand( this ) );
-
-		/// <summary>
-		///		チーム名リストを初期化するコマンド
-		/// </summary>
-		private ICommand cmdResetTeamsList;
-		/// <summary>
-		///		チーム名リストを初期化するコマンドを表します。
-		/// </summary>
-		public ICommand CMDResetTeamsList => cmdResetTeamsList ?? ( cmdResetTeamsList = new ResetTeamsListCommand( this ) );
-
-		#endregion
-
-		#endregion
-
-		#region SaveTeamsListCommand
-
-		/// <summary>
-		///		チーム名リストを保存して、メイン画面に戻るコマンドです。
-		/// </summary>
-		private class SaveTeamsListCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		SaveTeamsListCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public SaveTeamsListCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => mainVM.TeamsListSet?.Count > 0;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム名リストの変更を保存し、アプリの設定画面を閉じますか？", mainVM.SaveTeamListAndCloseSetting ) );
-			}
-		}
+		public ICommand CMDSaveTeamsList =>
+			cmdSaveTeamsList ??
+			( cmdSaveTeamsList = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム名リストの変更を保存し、アプリの設定画面を閉じますか？", SaveTeamListAndCloseSetting ) ),
+				p => TeamsListSet != null && TeamsListSet.Any()
+			) );
 
 		/// <summary>
 		///		チーム名リストを保存し、メイン画面に戻ります。
@@ -1244,61 +770,32 @@ namespace FRCTimer3 {
 		#region CloseSettingCommand
 
 		/// <summary>
-		///		チーム名リストを保存せず、メイン画面に戻るコマンドです。
+		///		チーム名リストを保存せずに戻るコマンド
 		/// </summary>
-		private class CloseSettingCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		CloseSettingCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public CloseSettingCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke(
-					this,
-					new ComfirmEventArgs(
-						"アプリの設定画面を閉じますか？\n（注意：保存していない変更部分は失われます。）",
-						mainVM.CloseFRCSetting
+		private ICommand cmdCloseSetting;
+		/// <summary>
+		///		チーム名リストを保存せずに戻るコマンドを表します。
+		/// </summary>
+		public ICommand CMDCloseSetting =>
+			cmdCloseSetting ??
+			( cmdCloseSetting = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke(
+						this,
+						new ComfirmEventArgs(
+							"アプリの設定画面を閉じますか？\n（注意：保存していない変更部分は失われます。）",
+							CloseFRCSetting
+						)
 					)
-				);
-			}
-		}
+			) );
 
 		/// <summary>
 		///		チーム名リストを保存せず、メイン画面に戻ります。
 		/// </summary>
 		private void CloseFRCSetting() {
 			NowState = FRCTimerState.TeamSelect;
-			TeamsListSet = null;
 			NotifyPropertyChanged( nameof( FRCTimerIsSetting ) );
-			NotifyFRCTimerPropertyChanged();
+			NotifyPropertyChanged( nameof( CommanddSetList ) );
 		}
 
 		#endregion
@@ -1306,46 +803,19 @@ namespace FRCTimer3 {
 		#region ApplyTeamsListCommand
 
 		/// <summary>
-		///		チーム名リストを保存するコマンドです。
+		///		チーム名リストを保存するコマンド
 		/// </summary>
-		private class ApplyTeamsListCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		ApplyTeamsListCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public ApplyTeamsListCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => mainVM.TeamsListSet?.Count > 0;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム名リストの変更を保存しますか？", mainVM.SaveTeamList ) );
-			}
-		}
+		private ICommand cmdApplyTeamsList;
+		/// <summary>
+		///		チーム名リストを保存するコマンドを表します。
+		/// </summary>
+		public ICommand CMDApplyTeamsList =>
+			cmdApplyTeamsList ??
+			( cmdApplyTeamsList = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "チーム名リストの変更を保存しますか？", SaveTeamList ) ),
+				p => TeamsListSet != null && TeamsListSet.Any()
+			) );
 
 		/// <summary>
 		///		チーム名リストを保存します。
@@ -1356,49 +826,21 @@ namespace FRCTimer3 {
 
 		#endregion
 
+		#endregion
+
+		#region 設定画面のボタン用
+
 		#region AddTeam
 
 		/// <summary>
-		///		チーム名をリストに追加するコマンドです。
+		///		チーム名をリストに追加するコマンド
 		/// </summary>
-		private class AddTeamCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		AddTeamCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public AddTeamCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetAddItem();
-			}
-		}
+		private ICommand cmdAddTeam;
+		/// <summary>
+		///		チーム名をリストに追加するコマンドを表します。
+		/// </summary>
+		public ICommand CMDAddTeam =>
+			cmdAddTeam ?? ( cmdAddTeam = new ActionCommand( this, p => TeamsListSetAddItem() ) );
 
 		/// <summary>
 		///		チーム名をリストにチームを追加します。
@@ -1415,7 +857,8 @@ namespace FRCTimer3 {
 			// OKボタンを押していたら、チーム名をリストに追加します。
 			if( tied.DialogResult ?? false ) {
 				TeamsListSet.Add( tied.Team );
-				NotifyPropertyChanged( nameof( TeamsListSet ) );
+				SelectedTeam = TeamsListSet.Count - 1;
+				NotifyPropertyChanged( nameof( SelectedTeam ) );
 			}
 		}
 
@@ -1424,46 +867,15 @@ namespace FRCTimer3 {
 		#region RenameTeam
 
 		/// <summary>
-		///		チーム名をリストにあるチーム名を編集するコマンドです。
+		///		チーム名を変更するコマンド
 		/// </summary>
-		private class RenameTeamCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		RenameTeamCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public RenameTeamCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetRenameItem();
-			}
-		}
+		private ICommand cmdRenameTeam;
+		/// <summary>
+		///		チーム名を変更するコマンドを表します。
+		/// </summary>
+		public ICommand CMDRenameTeam =>
+			cmdRenameTeam ??
+			( cmdRenameTeam = new ActionCommand( this, p => TeamsListSetRenameItem() ) );
 
 		/// <summary>
 		///		チーム名をリストで選択したチームの情報を編集します。
@@ -1481,7 +893,6 @@ namespace FRCTimer3 {
 				// OKボタンを押していたら、チーム名をリストに反映させます。
 				if( tied.DialogResult ?? false ) {
 					TeamsListSet[SelectedTeam] = tied.Team;
-					NotifyPropertyChanged( nameof( TeamsListSet ) );
 					NotifyPropertyChanged( nameof( SelectedTeam ) );
 				}
 			}
@@ -1493,46 +904,14 @@ namespace FRCTimer3 {
 		#region RemoveTeam
 
 		/// <summary>
-		///		チーム名をリストから削除するコマンドです。
+		///		チーム名をリストから削除するコマンド
 		/// </summary>
-		private class RemoveTeamCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		RemoveTeamCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public RemoveTeamCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetRemoveItem();
-			}
-		}
+		private ICommand cmdRemoveTeam;
+		/// <summary>
+		///		チーム名をリストから削除するコマンドを表します。
+		/// </summary>
+		public ICommand CMDRemoveTeam =>
+			cmdRemoveTeam ?? ( cmdRemoveTeam = new ActionCommand( this, p => TeamsListSetRemoveItem() ) );
 
 		/// <summary>
 		///		選択したチームをチーム名をリストから削除します。
@@ -1540,7 +919,6 @@ namespace FRCTimer3 {
 		private void TeamsListSetRemoveItem() {
 			try {
 				TeamsListSet.RemoveAt( SelectedTeam );
-				NotifyPropertyChanged( nameof( TeamsListSet ) );
 				NotifyPropertyChanged( nameof( SelectedTeam ) );
 			}
 			catch { }
@@ -1551,46 +929,19 @@ namespace FRCTimer3 {
 		#region MoveUpTeam
 
 		/// <summary>
-		///		チーム名を1つ上に移動するコマンドです。
+		///		チーム名を1つ上に移動するコマンド
 		/// </summary>
-		private class MoveUpTeamCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		MoveUpTeamCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public MoveUpTeamCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => mainVM.TeamsListSet?.Count > 1;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetMoveUpItem();
-			}
-		}
+		private ICommand cmdMoveUpTeam;
+		/// <summary>
+		///		チーム名を1つ上に移動するコマンドを表します。
+		/// </summary>
+		public ICommand CMDMoveUpTeam =>
+			cmdMoveUpTeam ??
+			( cmdMoveUpTeam = new ActionCommand(
+				this,
+				p => TeamsListSetMoveUpItem(),
+				p => TeamsListSet != null && TeamsListSet.Count > 1
+			) );
 
 		/// <summary>
 		///		選択したチームを1つ上に移動します。
@@ -1599,7 +950,6 @@ namespace FRCTimer3 {
 			try {
 				// リストの先頭の場合、末尾に移動します。
 				TeamsListSet.Move( SelectedTeam, SelectedTeam > 0 ? SelectedTeam - 1 : TeamsListSet.Count - 1 );
-				NotifyPropertyChanged( nameof( TeamsListSet ) );
 				NotifyPropertyChanged( nameof( SelectedTeam ) );
 			}
 			catch { }
@@ -1610,46 +960,19 @@ namespace FRCTimer3 {
 		#region MoveDownTeam
 
 		/// <summary>
-		///		チーム名を1つ下に移動するコマンドです。
+		///		チーム名を1つ下に移動するコマンド
 		/// </summary>
-		private class MoveDownTeamCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		MoveDownTeamCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public MoveDownTeamCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => mainVM.TeamsListSet?.Count > 1;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter">コマンドのパラメーター</param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetMoveDownItem();
-			}
-		}
+		private ICommand cmdMoveDownTeam;
+		/// <summary>
+		///		チーム名を1つ下に移動するコマンドを表します。
+		/// </summary>
+		public ICommand CMDMoveDownTeam =>
+			cmdMoveDownTeam ??
+			( cmdMoveDownTeam = new ActionCommand(
+				this,
+				p => TeamsListSetMoveDownItem(),
+				p => TeamsListSet != null && TeamsListSet.Count > 1
+			) );
 
 		/// <summary>
 		///		選択したチームを1つ下に移動します。
@@ -1658,7 +981,6 @@ namespace FRCTimer3 {
 			try {
 				// リストの末尾の場合、先頭に移動します。
 				TeamsListSet.Move( SelectedTeam, SelectedTeam < TeamsListSet.Count - 1 ? SelectedTeam + 1 : 0 );
-				NotifyPropertyChanged( nameof( TeamsListSet ) );
 				NotifyPropertyChanged( nameof( SelectedTeam ) );
 			}
 			catch { }
@@ -1669,53 +991,30 @@ namespace FRCTimer3 {
 		#region GatherTeamByGroup
 
 		/// <summary>
-		///		グループ名ごとにまとめてソートするコマンドです。
+		///		グループ名ごとにソートするコマンド
 		/// </summary>
-		private class SortTeamsByGroupCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		SortTeamsByGroupCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public SortTeamsByGroupCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => mainVM.TeamsListSet?.Count > 1;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter"></param>
-			public void Execute( object parameter ) {
-				mainVM.TeamsListSetGatherTeamByGroupItem();
-			}
-		}
+		private ICommand cmdGatherTeamsByGroup;
+		/// <summary>
+		///		グループ名ごとにソートするコマンドを表します。
+		/// </summary>
+		public ICommand CMDGatherTeamsByGroup =>
+			cmdGatherTeamsByGroup ??
+			( cmdGatherTeamsByGroup = new ActionCommand(
+				this,
+				p => TeamsListSetGatherTeamByGroupItem(),
+				p => TeamsListSet != null && TeamsListSet.Count > 1
+			) );
 
 		/// <summary>
 		///		チーム名リストをグループ名単位でソートします。
 		/// </summary>
 		private void TeamsListSetGatherTeamByGroupItem() {
-			TeamsListSet = new ObservableCollection<TeamInfo>( TeamsListSet.OrderBy( _ => _.GroupName ) );
-			NotifyPropertyChanged( nameof( TeamsListSet ) );
+			// ToListメソッドで即時実行させます。
+			var tmp = TeamsListSet.OrderBy( _ => _.GroupName ).ToList();
+			TeamsListSet.Clear();
+			foreach( var item in tmp ) {
+				TeamsListSet.Add( item );
+			}
 			NotifyPropertyChanged( nameof( SelectedTeam ) );
 		}
 
@@ -1724,54 +1023,28 @@ namespace FRCTimer3 {
 		#region RollbackTeamsList
 
 		/// <summary>
-		///		チーム名リストを元に戻すコマンドです。
+		///		チーム名リストを元に戻すコマンド
 		/// </summary>
-		private class RollbackTeamsListCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		RollbackTeamsListCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public RollbackTeamsListCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter"></param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "設定画面内のチーム名リストを変更前の状態に復元しますか？", mainVM.RollbackTeamsList ) );
-			}
-		}
+		private ICommand cmdRollbackTeamsList;
+		/// <summary>
+		///		チーム名リストを元に戻すコマンドを表します。
+		/// </summary>
+		public ICommand CMDRollbackTeamsList =>
+			cmdRollbackTeamsList ??
+			( cmdRollbackTeamsList = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "設定画面内のチーム名リストを変更前の状態に復元しますか？", RollbackTeamsList ) )
+			) );
 
 		/// <summary>
 		///		チーム名リストをアプリの設定画面を開く前の状態に戻します。
 		/// </summary>
 		private void RollbackTeamsList() {
-			TeamsListSet = new ObservableCollection<TeamInfo>( TeamsList );
-			SelectedTeam = 0;
-			NotifyPropertyChanged( nameof( TeamsListSet ) );
+			TeamsListSet.Clear();
+			foreach( var item in TeamsList ) {
+				TeamsListSet.Add( item );
+			}
+			SelectedTeam = TeamsListSet.Count > 0 ? 0 : -1;
 			NotifyPropertyChanged( nameof( SelectedTeam ) );
 		}
 
@@ -1780,46 +1053,18 @@ namespace FRCTimer3 {
 		#region ResetTeamsList
 
 		/// <summary>
-		///		チーム名リストを初期化するコマンドです。
+		///		チーム名リストを初期化するコマンド
 		/// </summary>
-		private class ResetTeamsListCommand : ICommand {
-
-			/// <summary>
-			///		MainViewModelの参照
-			/// </summary>
-			private MainViewModel mainVM;
-
-			/// <summary>
-			///		ResetTeamsListCommandの新しいインスタンスを生成します。
-			/// </summary>
-			public ResetTeamsListCommand( MainViewModel mvm ) {
-				mainVM = mvm;
-				// ViewModelのプロパティ変更通知と連動させます。
-				mainVM.PropertyChanged += ( sender, e ) =>
-					CanExecuteChanged?.Invoke( sender, e );
-			}
-
-			/// <summary>
-			///		CanExecuteが変更されたことを通知するイベントハンドラです。
-			/// </summary>
-			public event EventHandler CanExecuteChanged;
-
-			/// <summary>
-			///		実行可能かどうか判定します。
-			/// </summary>
-			/// <param name="parameter">コマンドパラメーター</param>
-			/// <returns>true：実行できます。 / false：実行できません。</returns>
-			/// <remarks>バインド先のコントロールのIsEnabledに対応しています。</remarks>
-			public bool CanExecute( object parameter ) => true;
-
-			/// <summary>
-			///		コマンドを実行します。
-			/// </summary>
-			/// <param name="parameter"></param>
-			public void Execute( object parameter ) {
-				mainVM.ComfirmAction?.Invoke( this, new ComfirmEventArgs( "設定画面内のチーム名リストを初期化しますか？\n※ メイン画面に反映させたい時は、初期化後に保存します。", mainVM.ResetTeamsList ) );
-			}
-		}
+		private ICommand cmdResetTeamsList;
+		/// <summary>
+		///		チーム名リストを初期化するコマンドを表します。
+		/// </summary>
+		public ICommand CMDResetTeamsList =>
+			cmdResetTeamsList ??
+			( cmdResetTeamsList = new ActionCommand(
+				this,
+				p => ComfirmAction?.Invoke( this, new ComfirmEventArgs( "設定画面内のチーム名リストを初期化しますか？\n※ メイン画面に反映させたい時は、初期化後に保存します。", ResetTeamsList ) )
+			) );
 
 		/// <summary>
 		///		チーム名リストを初期化します。
@@ -1830,7 +1075,6 @@ namespace FRCTimer3 {
 				TeamsListSet.Add( new TeamInfo { TeamName = $"Team {i}", GroupName = "Team Group" } );
 			}
 			SelectedTeam = 0;
-			NotifyPropertyChanged( nameof( TeamsListSet ) );
 			NotifyPropertyChanged( nameof( SelectedTeam ) );
 		}
 
@@ -1838,5 +1082,8 @@ namespace FRCTimer3 {
 
 		#endregion
 
+		#endregion
+
+		#endregion
 	}
 }

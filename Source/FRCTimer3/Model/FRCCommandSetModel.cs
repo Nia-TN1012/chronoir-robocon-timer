@@ -4,22 +4,22 @@ using System.Windows.Input;
 namespace FRCTimer3 {
 
 	/// <summary>
-	///		ボタンコントロールの文字列とコマンドを格納する構造体です。
+	///		ボタンコントロールの文字列とコマンドを格納する構造体を定義します。
 	/// </summary>
 	struct CommandButton {
 
 		/// <summary>
-		///		ボタンに表示する文字列を表します。
+		///		ボタンに表示する文字列を取得します。
 		/// </summary>
 		/// <remarks>Button.ContentやLabel.Contentにバインディングすると、アクセラレーターキーが利用できます。</remarks>
 		public string CommandName { get; private set; }
 		/// <summary>
-		///		ボタンに関連付けるコマンドインターフェースを表します。
+		///		ボタンに関連付けるICommandインターフェースを取得します。
 		/// </summary>
 		public ICommand Command { get; private set; }
 
 		/// <summary>
-		///		CommandButtonの新しいインスタンスを生成します。
+		///		CommandButtonクラスの新しいインスタンスを生成します。
 		/// </summary>
 		/// <param name="cn">ボタンに表示する文字列</param>
 		/// <param name="cmd">ボタンに関連付けるコマンドインターフェース</param>
@@ -30,7 +30,7 @@ namespace FRCTimer3 {
 	}
 
 	/// <summary>
-	///		アプリの状態とCommandButtonの関連付けたリストのModelです。
+	///		アプリの状態とCommandButtonの関連付けたリストのModelクラスを定義します。
 	/// </summary>
 	class FRCCommandSetModel {
 
@@ -40,7 +40,7 @@ namespace FRCTimer3 {
 		public Dictionary<FRCTimerState, CommandButton[]> FRCCommandSetList { get; private set; }
 
 		/// <summary>
-		///		FRCCommandSetModelの新しいインスタンスを生成します。
+		///		FRCCommandSetModelクラスの新しいインスタンスを生成します。
 		/// </summary>
 		/// <param name="startSetting">セッティング開始用</param>
 		/// <param name="skipSetting">セッティングスキップ用</param>
@@ -80,7 +80,5 @@ namespace FRCTimer3 {
 				[FRCTimerState.FRCTimerSetting] = new CommandButton[3] { saveTeamsList, closeSetting, applySetting }
 			};
 		}
-
-
 	}
 }

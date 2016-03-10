@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -11,36 +9,36 @@ using System.Text;
 namespace FRCTimer3 {
 
 	/// <summary>
-	///		JSONのパース用
+	///		JSONのパース用のクラスを定義します。
 	/// </summary>
 	[DataContract]
 	class CRTJson {
 		/// <summary>
-		///		Victory画面に表示するメッセージ
+		///		Victory画面に表示するメッセージを取得・設定します。
 		/// </summary>
 		[DataMember]
 		public string VictoryMessage { get; set; }
 
 		/// <summary>
-		///		準備時間
+		///		準備時間を取得・設定します。
 		/// </summary>
 		[DataMember]
 		public double ReadyTime { get; set; }
 
 		/// <summary>
-		///		セッティングタイム
+		///		セッティングタイムを取得・設定します。
 		/// </summary>
 		[DataMember]
 		public double SettingTime { get; set; }
 
 		/// <summary>
-		///		試合時間
+		///		試合時間を取得・設定します。
 		/// </summary>
 		[DataMember]
 		public double PlayTime { get; set; }
 
 		/// <summary>
-		///		自動機発進のタイムリミット
+		///		自動機発進のタイムリミットを取得・設定します。
 		/// </summary>
 		[DataMember]
 		public double AutoMachineLanchTimeLimit { get; set; }
@@ -49,7 +47,7 @@ namespace FRCTimer3 {
 	/// <summary>
 	///		タイマーのModelです。
 	/// </summary>
-	class TimerModel : INotifyPropertyChanged {
+	class TimerModel : NotifyPropertyChangedHelper {
 
 		/// <summary>
 		///		経過時間を管理するストップウォッチです。
@@ -57,42 +55,44 @@ namespace FRCTimer3 {
 		private Stopwatch sw;
 
 		/// <summary>
-		///		時間定義ファイルの名前です。
+		///		時間定義ファイルの名前を取得します。
 		/// </summary>
-		public static string FileName { get; } = @"settings.json";
+		public static string FileName { get; } =
+			@"settings.json";
 
 		/// <summary>
-		///		Victory画面に表示するメッセージを表します。
+		///		Victory画面に表示するメッセージを取得します。
 		/// </summary>
 		public static string VictoryMessage { get; private set; }
 
 		/// <summary>
-		///		準備時間を表します。
+		///		準備時間を取得します。
 		/// </summary>
 		public static TimeSpan ReadyTime { get; private set; }
 
 		/// <summary>
-		///		セッティング時間を表します。
+		///		セッティング時間を取得します。
 		/// </summary>
 		public static TimeSpan SettingTime { get; private set; }
 
 		/// <summary>
-		///		試合時間を表します。
+		///		試合時間を取得します。
 		/// </summary>
 		public static TimeSpan PlayTime { get; private set; }
 
 		/// <summary>
-		///		試合において、自動機発進時間のリミットを表します。
+		///		試合において、自動機発進時間のリミットを取得します。
 		/// </summary>
 		public static TimeSpan AutoMachineLanchTimeLimit { get; private set; }
 
 		/// <summary>
 		///		現在の経過時間を取得します。
 		/// </summary>
-		public TimeSpan Duration => sw.Elapsed;
+		public TimeSpan Duration =>
+			sw.Elapsed;
 
 		/// <summary>
-		///		TimerModelの新しいインスタンスを生成します。
+		///		TimerModelクラスの新しいインスタンスを生成します。
 		/// </summary>
 		public TimerModel() {
 			sw = new Stopwatch();
@@ -187,26 +187,14 @@ namespace FRCTimer3 {
 		///		タイマーを停止します。
 		/// </summary>
 		public void Stop() {
-			if( sw.IsRunning )
+			if( sw.IsRunning ) {
 				sw.Reset();
+			}
 		}
 
 		/// <summary>
-		///		プロパティを変更した時に発生するイベントハンドラです。
-		/// </summary>
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		/// <summary>
-		///		時間定義ファイルを読み込んだ後に発生するイベントハンドラです。
+		///		時間定義ファイルを読み込んだ後に発生します。
 		/// </summary>
 		public event NotifyResultEventHandler<LoadSettingsResult, bool, bool> LoadSettingsCompleted;
-
-		/// <summary>
-		///		プロパティの変更を通知します。
-		/// </summary>
-		/// <param name="propertyName">プロパティ名（ 省略時、呼び出し元のプロパティ名 ）</param>
-		private void NotifyPropertyChanged( [CallerMemberName]string propertyName = null ) {
-			PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-		}
 	}
 }

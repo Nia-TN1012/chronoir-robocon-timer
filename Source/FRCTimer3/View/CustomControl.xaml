@@ -2,50 +2,51 @@
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 					xmlns:d="http://schemas.microsoft.com/expression/interactivedesigner/2006"
 					xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+					xmlns:local="clr-namespace:FRCTimer3"
 					mc:Ignorable="d">
 
     <!--  NormalBrush は Button、RepeatButton の背景に使用されます -->
 	<!-- バッググラウンド用 -->
-	<SolidColorBrush x:Key="HybridComboBoxNormalBrush" Color="#111"/>
-	<SolidColorBrush x:Key="HybridComboBoxInvNormalBrush" Color="#EEE"/>
+	<SolidColorBrush x:Key="ExComboBoxNormalBrush" Color="#111"/>
+	<SolidColorBrush x:Key="ExComboBoxInvNormalBrush" Color="#EEE"/>
 	<!-- 境界線用 -->
-	<SolidColorBrush x:Key="HybridComboBoxNormalBorderBrush" Color="#777"/>
-	<SolidColorBrush x:Key="HybridComboBoxInvNormalBorderBrush" Color="#999"/>
+	<SolidColorBrush x:Key="ExComboBoxNormalBorderBrush" Color="#777"/>
+	<SolidColorBrush x:Key="ExComboBoxInvNormalBorderBrush" Color="#999"/>
 
 	<!-- LightBrush はメニュー、タブ コントロールの背景などのコンテンツ領域に使用されます -->
 	<!-- バッググラウンド用 -->
-	<SolidColorBrush x:Key="HybridComboBoxLightBrush" Color="#000"/>
+	<SolidColorBrush x:Key="ExComboBoxLightBrush" Color="#000"/>
 	<!-- 境界線用 -->
-	<SolidColorBrush x:Key="HybridComboBoxNormalLightBrush" Color="#444"/>
+	<SolidColorBrush x:Key="ExComboBoxNormalLightBrush" Color="#444"/>
 
 	<!-- MouseOverBrush は Button、Radio Button、CheckBox の MouseOver に使用されます -->
 	<!-- バッググラウンド用 -->
-	<SolidColorBrush x:Key="HybridComboBoxMouseOverBrush" Color="#40FFFFFF"/>
-	<SolidColorBrush x:Key="HybridComboBoxInvMouseOverBrush" Color="#40404040"/>
-	<SolidColorBrush x:Key="HybridComboBoxMouseOverForegroundBrush" Color="#FFF"/>
+	<SolidColorBrush x:Key="ExComboBoxMouseOverBrush" Color="#40FFFFFF"/>
+	<SolidColorBrush x:Key="ExComboBoxInvMouseOverBrush" Color="#40404040"/>
+	<SolidColorBrush x:Key="ExComboBoxMouseOverForegroundBrush" Color="#FFF"/>
 
 	<!-- PressedBrush は Button、Radio Button、CheckBox の Pressed (押された状態時) に使用されます -->
 	<!-- バッググラウンド用 -->
-	<SolidColorBrush x:Key="HybridComboBoxPressedBrush" Color="#FF2464FF"/>
+	<SolidColorBrush x:Key="ExComboBoxPressedBrush" Color="#FF2464FF"/>
 	<!-- 境界線用 -->
-	<SolidColorBrush x:Key="HybridComboBoxPressedBorderBrush" Color="#999"/>
+	<SolidColorBrush x:Key="ExComboBoxPressedBorderBrush" Color="#999"/>
 
 	<!-- 無効ブラシは各コントロールの無効状態の表示に使用されます -->
-	<SolidColorBrush x:Key="HybridComboBoxDisabledForegroundBrush" Color="#24FFFFFF"/>
-	<SolidColorBrush x:Key="HybridComboBoxDisabledBackgroundBrush" Color="#111"/>
-	<SolidColorBrush x:Key="HybridComboBoxDisabledBorderBrush" Color="#24FFFFFF"/>
+	<SolidColorBrush x:Key="ExComboBoxDisabledForegroundBrush" Color="#24FFFFFF"/>
+	<SolidColorBrush x:Key="ExComboBoxDisabledBackgroundBrush" Color="#111"/>
+	<SolidColorBrush x:Key="ExComboBoxDisabledBorderBrush" Color="#24FFFFFF"/>
 
 	<!-- SelectedBackgroundBrush は ListBoxItem、ComboBoxItem の選択されたアイテムに使用されます-->
-	<SolidColorBrush x:Key="HybridComboBoxSelectedBackgroundBrush" Color="#222"/>
+	<SolidColorBrush x:Key="ExComboBoxSelectedBackgroundBrush" Color="#222"/>
 
-	<SolidColorBrush x:Key="HybridComboBoxSelectedBorderBrush" Color="#777"/>
+	<SolidColorBrush x:Key="ExComboBoxSelectedBorderBrush" Color="#777"/>
 
 	<!-- DefaultedBorderBrush は KeyBoardFocus の表示に使用されます -->
-	<SolidColorBrush x:Key="HybridComboBoxDefaultedBorderBrush" Color="#CCC"/>
+	<SolidColorBrush x:Key="ExComboBoxDefaultedBorderBrush" Color="#CCC"/>
 
-	<SolidColorBrush x:Key="HybridComboBoxSolidBorderBrush" Color="#777"/>
-	<SolidColorBrush x:Key="HybridComboBoxLightBorderBrush" Color="#555"/>
-	<SolidColorBrush x:Key="HybridComboBoxLightColorBrush" Color="#333"/>
+	<SolidColorBrush x:Key="ExComboBoxSolidBorderBrush" Color="#777"/>
+	<SolidColorBrush x:Key="ExComboBoxLightBorderBrush" Color="#555"/>
+	<SolidColorBrush x:Key="ExComboBoxLightColorBrush" Color="#333"/>
 
 	<!-- Checkmark、Radio Button、TreeViewItem、Expander ToggleButton の字形に使用されます -->
 	<SolidColorBrush x:Key="GlyphBrush" Color="#BBB"/>
@@ -68,7 +69,7 @@
     <!-- Hybrid Button - このコントロールは各状態のブラシを設定します。これらのブラシは、静的リソースであるため、上記のリストに含まれている必要があります -->
     <Style x:Key="HybridButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
         <Setter Property="FocusVisualStyle" Value="{StaticResource HybridItemFocusVisual}"/>
-        <Setter Property="Background" Value="{StaticResource HybridComboBoxNormalBrush}"/>
+        <Setter Property="Background" Value="{StaticResource ExComboBoxNormalBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -92,20 +93,20 @@
                     <ControlTemplate.Triggers>
                         <!-- IsKeyboardFocusedはキーボードなどでフォーカスされている状態です。 -->
                         <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxPressedBrush}" TargetName="Border"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource ExComboBoxPressedBrush}" TargetName="Border"/>
                         </Trigger>
                         <!-- IsMouseOverはマウスがコントロールの上にいる状態です。 -->
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" Value="{StaticResource HybridComboBoxMouseOverBrush}" TargetName="Border"/>
+                            <Setter Property="Background" Value="{StaticResource ExComboBoxMouseOverBrush}" TargetName="Border"/>
                         </Trigger>
                         <!-- IsPressedはマウスなどがコントロールをクリックしている状態です。 -->
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter Property="Background" Value="{StaticResource HybridComboBoxPressedBrush}" TargetName="Border"/>
+                            <Setter Property="Background" Value="{StaticResource ExComboBoxPressedBrush}" TargetName="Border"/>
                         </Trigger>
                         <!-- IsEnabledはコントロールの有効・無効の状態です。 -->
                         <Trigger Property="IsEnabled" Value="true"/>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{StaticResource HybridComboBoxDisabledForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource ExComboBoxDisabledForegroundBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -113,16 +114,16 @@
         </Setter>
     </Style>
 
-    <!-- HybridComboBoxItemFocusVisual は HybridComboBoxButton などコントロール周辺のキーボード フォーカスの表示に使用されます-->
-	<Style x:Key="HybridComboBoxItemFocusVisual">
-		<Setter Property="Control.Template" Value="{StaticResource HybridComboBoxControlFocusVisual}"/>
+    <!-- ExComboBoxItemFocusVisual は ExComboBoxButton などコントロール周辺のキーボード フォーカスの表示に使用されます-->
+	<Style x:Key="ExComboBoxItemFocusVisual">
+		<Setter Property="Control.Template" Value="{StaticResource ExComboBoxControlFocusVisual}"/>
 	</Style>
 
-	<!-- HybridComboBox Button - このコントロールは各状態のブラシを設定します。これらのブラシは、静的リソースであるため、上記のリストに含まれている必要があります -->
-	<Style x:Key="HybridComboBoxButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
-		<Setter Property="FocusVisualStyle" Value="{StaticResource HybridComboBoxItemFocusVisual}"/>
-		<Setter Property="Background" Value="{StaticResource HybridComboBoxNormalBrush}"/>
-		<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxNormalBorderBrush}"/>
+	<!-- ExComboBox Button - このコントロールは各状態のブラシを設定します。これらのブラシは、静的リソースであるため、上記のリストに含まれている必要があります -->
+	<Style x:Key="ExComboBoxButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
+		<Setter Property="FocusVisualStyle" Value="{StaticResource ExComboBoxItemFocusVisual}"/>
+		<Setter Property="Background" Value="{StaticResource ExComboBoxNormalBrush}"/>
+		<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxNormalBorderBrush}"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Button}">
@@ -145,21 +146,21 @@
 					<ControlTemplate.Triggers>
 						<!-- IsKeyboardFocusedはキーボードなどでフォーカスされている状態です。 -->
 						<Trigger Property="IsKeyboardFocused" Value="true">
-							<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxDefaultedBorderBrush}" TargetName="Border"/>
+							<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxDefaultedBorderBrush}" TargetName="Border"/>
 						</Trigger>
 						<!-- IsMouseOverはマウスがコントロールの上にいる状態です。 -->
 						<Trigger Property="IsMouseOver" Value="true">
-							<Setter Property="Background" Value="{StaticResource HybridComboBoxMouseOverBrush}" TargetName="Border"/>
+							<Setter Property="Background" Value="{StaticResource ExComboBoxMouseOverBrush}" TargetName="Border"/>
 						</Trigger>
 						<!-- IsPressedはマウスなどがコントロールをクリックしている状態です。 -->
 						<Trigger Property="IsPressed" Value="true">
-							<Setter Property="Background" Value="{StaticResource HybridComboBoxPressedBrush}" TargetName="Border"/>
+							<Setter Property="Background" Value="{StaticResource ExComboBoxPressedBrush}" TargetName="Border"/>
 						</Trigger>
 						<!-- IsEnabledはコントロールの有効・無効の状態です。 -->
 						<Trigger Property="IsEnabled" Value="true"/>
 						<Trigger Property="IsEnabled" Value="false">
-							<Setter Property="Foreground" Value="{StaticResource HybridComboBoxDisabledForegroundBrush}"/>
-							<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxDisabledBorderBrush}" TargetName="Border"/>
+							<Setter Property="Foreground" Value="{StaticResource ExComboBoxDisabledForegroundBrush}"/>
+							<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxDisabledBorderBrush}" TargetName="Border"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -167,11 +168,11 @@
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox Repeat Button - これは HybridComboBox ScrollBar で上下のボタンとして使用されます -->
-	<Style x:Key="HybridComboBoxRepeatButton" d:IsControlPart="True" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
-		<Setter Property="Background" Value="{StaticResource HybridComboBoxInvNormalBrush}"/>
-		<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxInvNormalBorderBrush}"/>
-		<Setter Property="FocusVisualStyle" Value="{StaticResource HybridComboBoxItemFocusVisual}"/>
+	<!-- ExComboBox Repeat Button - これは ExComboBox ScrollBar で上下のボタンとして使用されます -->
+	<Style x:Key="ExComboBoxRepeatButton" d:IsControlPart="True" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
+		<Setter Property="Background" Value="{StaticResource ExComboBoxInvNormalBrush}"/>
+		<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxInvNormalBorderBrush}"/>
+		<Setter Property="FocusVisualStyle" Value="{StaticResource ExComboBoxItemFocusVisual}"/>
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -181,19 +182,19 @@
 					</Grid>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsKeyboardFocused" Value="true">
-							<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxDefaultedBorderBrush}" TargetName="Border"/>
+							<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxDefaultedBorderBrush}" TargetName="Border"/>
 						</Trigger>
 						<Trigger Property="IsMouseOver" Value="true">
-							<Setter Property="Background" Value="{StaticResource HybridComboBoxInvMouseOverBrush}" TargetName="Border"/>
+							<Setter Property="Background" Value="{StaticResource ExComboBoxInvMouseOverBrush}" TargetName="Border"/>
 						</Trigger>
 						<Trigger Property="IsPressed" Value="true">
-							<Setter Property="Background" Value="{StaticResource HybridComboBoxPressedBrush}" TargetName="Border"/>
-							<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxPressedBorderBrush}" TargetName="Border"/>
+							<Setter Property="Background" Value="{StaticResource ExComboBoxPressedBrush}" TargetName="Border"/>
+							<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxPressedBorderBrush}" TargetName="Border"/>
 						</Trigger>
 						<Trigger Property="IsEnabled" Value="false">
-							<Setter Property="Background" Value="{StaticResource HybridComboBoxDisabledBackgroundBrush}" TargetName="Border"/>
-							<Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxDisabledBorderBrush}" TargetName="Border"/>
-							<Setter Property="Foreground" Value="{StaticResource HybridComboBoxDisabledForegroundBrush}"/>
+							<Setter Property="Background" Value="{StaticResource ExComboBoxDisabledBackgroundBrush}" TargetName="Border"/>
+							<Setter Property="BorderBrush" Value="{StaticResource ExComboBoxDisabledBorderBrush}" TargetName="Border"/>
+							<Setter Property="Foreground" Value="{StaticResource ExComboBoxDisabledForegroundBrush}"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -201,22 +202,22 @@
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox Thumb -  HybridComboBox Thumb は HybridComboBox ScrollBar のドラッグ可能な部分です -->
-	<Style x:Key="HybridComboBoxThumbStyle" d:IsControlPart="True" TargetType="{x:Type Thumb}" BasedOn="{x:Null}">
+	<!-- ExComboBox Thumb -  ExComboBox Thumb は ExComboBox ScrollBar のドラッグ可能な部分です -->
+	<Style x:Key="ExComboBoxThumbStyle" d:IsControlPart="True" TargetType="{x:Type Thumb}" BasedOn="{x:Null}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Thumb}">
 					<Grid Margin="0,0,0,0" x:Name="Grid">
-						<Rectangle HorizontalAlignment="Stretch" x:Name="Rectangle" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{DynamicResource HybridComboBoxInvNormalBrush}" Stroke="{DynamicResource HybridComboBoxInvNormalBorderBrush}"/>
+						<Rectangle HorizontalAlignment="Stretch" x:Name="Rectangle" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="{DynamicResource ExComboBoxInvNormalBrush}" Stroke="{DynamicResource ExComboBoxInvNormalBorderBrush}"/>
 					</Grid>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsFocused" Value="True"/>
 						<Trigger Property="IsMouseOver" Value="True">
-							<Setter Property="Fill" Value="{StaticResource HybridComboBoxInvMouseOverBrush}" TargetName="Rectangle"/>
+							<Setter Property="Fill" Value="{StaticResource ExComboBoxInvMouseOverBrush}" TargetName="Rectangle"/>
 						</Trigger>
 						<Trigger Property="IsEnabled" Value="False"/>
 						<Trigger Property="IsDragging" Value="True">
-							<Setter Property="Fill" Value="{StaticResource HybridComboBoxPressedBrush}" TargetName="Rectangle"/>
+							<Setter Property="Fill" Value="{StaticResource ExComboBoxPressedBrush}" TargetName="Rectangle"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
@@ -224,8 +225,8 @@
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox ScrollRepeatButton Style - この RepeatButton は HybridComboBox ScrollBar の HybridComboBox Thumb の上下で使用されます。HybridComboBox ScrollBar に重なって表示されないように透明に設定されています -->
-	<Style x:Key="HybridComboBoxScrollRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}">
+	<!-- ExComboBox ScrollRepeatButton Style - この RepeatButton は ExComboBox ScrollBar の ExComboBox Thumb の上下で使用されます。ExComboBox ScrollBar に重なって表示されないように透明に設定されています -->
+	<Style x:Key="ExComboBoxScrollRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}">
 		<Setter Property="Background" Value="Transparent"/>
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="IsTabStop" Value="false"/>
@@ -241,8 +242,8 @@
 		</Setter>
 	</Style>
 	
-	<!-- HybridComboBox ScrollBar  これは HybridComboBoxThumb、HybridComboBoxRepeatButton、および HybridComboBoxScrollRepeatButton を利用します -->
-	<Style x:Key="HybridComboBoxScrollBar" TargetType="{x:Type ScrollBar}">
+	<!-- ExComboBox ScrollBar  これは ExComboBoxThumb、ExComboBoxRepeatButton、および ExComboBoxScrollRepeatButton を利用します -->
+	<Style x:Key="ExComboBoxScrollBar" TargetType="{x:Type ScrollBar}">
 		<Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
 		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
 		<Setter Property="Template">
@@ -255,7 +256,7 @@
 							<RowDefinition MaxHeight="18"/>
 						</Grid.RowDefinitions>
 
-						<RepeatButton x:Name="DecreaseRepeat" Style="{DynamicResource HybridComboBoxRepeatButton}" Command="ScrollBar.LineUpCommand">
+						<RepeatButton x:Name="DecreaseRepeat" Style="{DynamicResource ExComboBoxRepeatButton}" Command="ScrollBar.LineUpCommand">
 							<Grid>
 								<Path x:Name="DecreaseArrow" Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" StrokeThickness="1" Data="M 0 4 L 8 4 L 4 0 Z"/>
 							</Grid>
@@ -264,17 +265,17 @@
 						<!-- Track は両端をジャンプしてスクロールする Thumb と Repeat Button のサイズを変更する特殊なレイアウト コンテナーです -->
 						<Track Grid.Row="1" x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="true">
 							<Track.Thumb>
-								<Thumb Style="{DynamicResource HybridComboBoxThumbStyle}"/>
+								<Thumb Style="{DynamicResource ExComboBoxThumbStyle}"/>
 							</Track.Thumb>
 							<Track.IncreaseRepeatButton>
-								<RepeatButton x:Name="PageUp" Style="{DynamicResource HybridComboBoxScrollRepeatButtonStyle}" Command="ScrollBar.PageDownCommand"/>
+								<RepeatButton x:Name="PageUp" Style="{DynamicResource ExComboBoxScrollRepeatButtonStyle}" Command="ScrollBar.PageDownCommand"/>
 							</Track.IncreaseRepeatButton>
 							<Track.DecreaseRepeatButton>
-								<RepeatButton x:Name="PageDown" Style="{DynamicResource HybridComboBoxScrollRepeatButtonStyle}" Command="ScrollBar.PageUpCommand"/>
+								<RepeatButton x:Name="PageDown" Style="{DynamicResource ExComboBoxScrollRepeatButtonStyle}" Command="ScrollBar.PageUpCommand"/>
 							</Track.DecreaseRepeatButton>
 						</Track>
 
-						<RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Style="{DynamicResource HybridComboBoxRepeatButton}" Command="ScrollBar.LineDownCommand">
+						<RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Style="{DynamicResource ExComboBoxRepeatButton}" Command="ScrollBar.LineDownCommand">
 							<Grid>
 								<Path x:Name="IncreaseArrow" Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" StrokeThickness="1" Data="M 0 0 L 4 4 L 8 0 Z"/>
 							</Grid>
@@ -308,10 +309,10 @@
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox ScrollViewer 
+	<!-- ExComboBox ScrollViewer 
 	ScrollViewer は、ContentPresenter と水平および垂直の ScrollBar を持つグリッド コントロールです 
 	これは、ListBox、MenuItem、ComboBox、および TreeView で使用されます -->
-	<Style x:Key="HybridComboBoxScrollViewer" TargetType="{x:Type ScrollViewer}" BasedOn="{x:Null}">
+	<Style x:Key="ExComboBoxScrollViewer" TargetType="{x:Type ScrollViewer}" BasedOn="{x:Null}">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type ScrollViewer}">
@@ -329,16 +330,16 @@
 												ContentTemplate="{TemplateBinding ContentTemplate}" CanContentScroll="{TemplateBinding CanContentScroll}"/>
 
 						<!-- ScrollBars の表示はコントロールの実装で制御されます -->
-						<ScrollBar Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Grid.Column="0" Grid.Row="1" x:Name="PART_HorizontalScrollBar" Style="{StaticResource HybridComboBoxScrollBar}" Orientation="Horizontal" Value="{Binding Path=HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" Background="Black" BorderBrush="{x:Null}" />
-						<ScrollBar Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Grid.Column="1" Grid.Row="0" x:Name="PART_VerticalScrollBar" Style="{StaticResource HybridComboBoxScrollBar}" Orientation="Vertical" Value="{Binding Path=VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" />
+						<ScrollBar Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Grid.Column="0" Grid.Row="1" x:Name="PART_HorizontalScrollBar" Style="{StaticResource ExComboBoxScrollBar}" Orientation="Horizontal" Value="{Binding Path=HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Minimum="0" Maximum="{TemplateBinding ScrollableWidth}" Background="Black" BorderBrush="{x:Null}" />
+						<ScrollBar Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Grid.Column="1" Grid.Row="0" x:Name="PART_VerticalScrollBar" Style="{StaticResource ExComboBoxScrollBar}" Orientation="Vertical" Value="{Binding Path=VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Minimum="0" Maximum="{TemplateBinding ScrollableHeight}" />
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox用トグルボタンです。 -->
-	<ControlTemplate x:Key="HybridComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+	<!-- ExComboBox用トグルボタンです。 -->
+	<ControlTemplate x:Key="ExComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
 		<Grid>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition/>
@@ -347,47 +348,40 @@
 			<!-- トグルボタンを構成するグラフィックスのStroke、Fillをnullにします。 -->
 			<Rectangle Grid.ColumnSpan="2" x:Name="Rectangle"
 					   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-					   Width="Auto" Height="Auto" Fill="{StaticResource HybridComboBoxNormalBrush}" Stroke="{StaticResource HybridComboBoxNormalBorderBrush}"/>
+					   Width="Auto" Height="Auto" Fill="{StaticResource ExComboBoxNormalBrush}" Stroke="{StaticResource ExComboBoxNormalBorderBrush}"/>
 			<Path Grid.Column="1" x:Name="Arrow" 
 				  HorizontalAlignment="Center" VerticalAlignment="Center"
-				  Fill="{StaticResource HybridComboBoxInvNormalBrush}" Data="M 0 0 L 4 4 L 8 0 Z" Stroke="{StaticResource HybridComboBoxNormalBorderBrush}"/>
+				  Fill="{StaticResource ExComboBoxInvNormalBrush}" Data="M 0 0 L 4 4 L 8 0 Z" Stroke="{StaticResource ExComboBoxNormalBorderBrush}"/>
 		</Grid>
 		<ControlTemplate.Triggers>
 			<Trigger Property="IsMouseOver" Value="true">
-				<Setter Property="Fill" TargetName="Rectangle" Value="{StaticResource HybridComboBoxMouseOverBrush}"/>
-				<Setter Property="Fill" TargetName="Arrow" Value="{StaticResource HybridComboBoxMouseOverForegroundBrush}"/>
+				<Setter Property="Fill" TargetName="Rectangle" Value="{StaticResource ExComboBoxMouseOverBrush}"/>
+				<Setter Property="Fill" TargetName="Arrow" Value="{StaticResource ExComboBoxMouseOverForegroundBrush}"/>
 			</Trigger>
 			<Trigger Property="IsChecked" Value="true">
-				<Setter Property="Fill" TargetName="Rectangle" Value="{StaticResource HybridComboBoxMouseOverBrush}"/>
-				<Setter Property="Fill" TargetName="Arrow" Value="{StaticResource HybridComboBoxMouseOverForegroundBrush}"/>
+				<Setter Property="Fill" TargetName="Rectangle" Value="{StaticResource ExComboBoxMouseOverBrush}"/>
+				<Setter Property="Fill" TargetName="Arrow" Value="{StaticResource ExComboBoxMouseOverForegroundBrush}"/>
 			</Trigger>
 			<Trigger Property="IsEnabled" Value="True"/>
-			<!-- コントロールが無効の時、TextBlock風にします。 -->
-			<Trigger Property="IsEnabled" Value="False">
-				<Setter Property="Fill" TargetName="Rectangle" Value="Transparent"/>
-				<Setter Property="Fill" TargetName="Arrow" Value="{x:Null}"/>
-				<Setter Property="Stroke" TargetName="Rectangle" Value="{x:Null}"/>
-				<Setter Property="Stroke" TargetName="Arrow" Value="{x:Null}"/>
-			</Trigger>
 		</ControlTemplate.Triggers>
 	</ControlTemplate>
 
-	<!-- HybridComboBox用TextBoxです。 -->
-	<ControlTemplate x:Key="HybridComboBoxTextBox" TargetType="{x:Type TextBox}">
+	<!-- ExComboBox用TextBoxです。 -->
+	<ControlTemplate x:Key="ExComboBoxTextBox" TargetType="{x:Type TextBox}">
 		<!-- これは PART_ContentHost と名前を付ける必要があります -->
 		<Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}"/>
 	</ControlTemplate>
 
-	<!-- HybridComboBox本体です。 -->
-	<Style x:Key="HybridComboBox" TargetType="{x:Type ComboBox}">
+	<!-- ExComboBox本体です。 -->
+	<Style x:Key="ExComboBox" TargetType="local:ExComboBox">
 		<Setter Property="SnapsToDevicePixels" Value="true"/>
 		<Setter Property="FocusVisualStyle" Value="{StaticResource HybridItemFocusVisual}"/>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type ComboBox}">
+				<ControlTemplate TargetType="local:ExComboBox">
 					<Grid>
 						<!-- ToggleButton は、IsDropDownOpen を切り替えるため ComboBox 自身にデータ バインドされています  -->
-						<ToggleButton Grid.Column="2" Template="{StaticResource HybridComboBoxToggleButton}"
+						<ToggleButton Grid.Column="2" Template="{StaticResource ExComboBoxToggleButton}"
 									  x:Name="ToggleButton" Focusable="false"
 									  IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
 						<ContentPresenter Margin="3,3,23,3" x:Name="ContentSite"
@@ -399,7 +393,7 @@
 										  IsHitTestVisible="False"/>
 
 						<!-- TextBox は PART_EditableTextBox と名前を付ける必要があります。それ以外の名前では、ComboBox で認識されません -->
-						<TextBox Visibility="Hidden" Template="{StaticResource HybridComboBoxTextBox}"
+						<TextBox Visibility="Hidden" Template="{StaticResource ExComboBoxTextBox}"
 								 Foreground="{TemplateBinding Foreground}"
 								 HorizontalAlignment="{TemplateBinding HorizontalAlignment}" Margin="3,3,23,3" x:Name="PART_EditableTextBox" Style="{x:Null}"
 								 VerticalAlignment="{TemplateBinding VerticalAlignment}" Focusable="True" Background="Transparent" IsReadOnly="{TemplateBinding IsReadOnly}"/>
@@ -407,10 +401,10 @@
 						<!-- Popup には ComboBox のアイテム一覧が表示されます。IsOpen は、ComboBoxToggleButton を介して切り替えられる IsDropDownOpen にデータ バインドされています  -->
 						<Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
 							<Grid MaxHeight="{TemplateBinding MaxDropDownHeight}" MinWidth="{TemplateBinding ActualWidth}" x:Name="DropDown" SnapsToDevicePixels="True">
-								<Border x:Name="DropDownBorder" Background="{StaticResource HybridComboBoxLightBrush}" BorderBrush="{StaticResource HybridComboBoxNormalBorderBrush}" BorderThickness="1"/>
-								<ScrollViewer Margin="4,6,4,6" Style="{StaticResource HybridComboBoxScrollViewer}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+								<Border x:Name="DropDownBorder" Background="{StaticResource ExComboBoxLightBrush}" BorderBrush="{StaticResource ExComboBoxNormalBorderBrush}" BorderThickness="1"/>
+								<ScrollViewer Margin="4,6,4,6" Style="{StaticResource ExComboBoxScrollViewer}" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
 
-									 <!--StackPanel は IsItemsHost を True に設定することで子の表示に使用されます--> 
+									<!--StackPanel は IsItemsHost を True に設定することで子の表示に使用されます-->
 									<StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
 
 								</ScrollViewer>
@@ -423,6 +417,9 @@
 							<Setter Property="MinHeight" Value="95" TargetName="DropDownBorder"/>
 						</Trigger>
 						<!-- EnambleがFalseの時はポップアップを無効にします -->
+						<Trigger Property="IsSelectable" Value="false">
+							<Setter Property="Visibility" Value="Collapsed" TargetName="ToggleButton"/>
+						</Trigger>
 						<Trigger Property="IsEnabled" Value="false"/>
 						<Trigger Property="IsGrouping" Value="true">
 							<Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
@@ -442,15 +439,15 @@
 		</Setter>
 	</Style>
 
-	<!-- HybridComboBox ComboBoxItem - これは ComboBox 内の各アイテムに使用されます。以下の各アイテムの選択された色を変更できます-->
+	<!-- ExComboBox ComboBoxItem - これは ComboBox 内の各アイテムに使用されます。以下の各アイテムの選択された色を変更できます-->
 	<!-- 
-			<ComboBox Style="{StaticResource HybridComboBox}">
+			<ComboBox Style="{StaticResource ExComboBox}">
 				<ComboBox.Resources>
-					<Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource HybridComboBoxItem}"/>
+					<Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource ExComboBoxItem}"/>
 				</ComboBox.Resources>
 			</ComboBox>
 	-->
-    <Style x:Key="HybridComboBoxItem" d:IsControlPart="True" TargetType="{x:Type ComboBoxItem}">
+    <Style x:Key="ExComboBoxItem" d:IsControlPart="True" TargetType="{x:Type ComboBoxItem}">
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -467,13 +464,13 @@
 
                         <!-- IsHighlighted の SelectedBackgroundBrush を変更してアイテムの選択の色を設定します -->
                         <Trigger Property="IsHighlighted" Value="true">
-                            <Setter Property="Background" Value="{DynamicResource HybridComboBoxSelectedBackgroundBrush}" TargetName="Border"/>
+                            <Setter Property="Background" Value="{DynamicResource ExComboBoxSelectedBackgroundBrush}" TargetName="Border"/>
                             <Setter Property="Foreground" Value="White"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource HybridComboBoxSelectedBorderBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource ExComboBoxSelectedBorderBrush}"/>
                             <Setter Property="BorderThickness" Value="1"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Foreground" Value="{DynamicResource HybridComboBoxDisabledForegroundBrush}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource ExComboBoxDisabledForegroundBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

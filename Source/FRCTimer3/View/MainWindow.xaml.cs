@@ -10,12 +10,12 @@ namespace FRCTimer3 {
 	public partial class MainWindow : Window {
 
 		/// <summary>
-		///		効果音
+		///		効果音の種類と効果音のリソースのペアを表します。
 		/// </summary>
 		private Dictionary<FRCSoundEffectType, SoundPlayer> frcSoundEffect;
 
 		/// <summary>
-		///		MainWindowの新しいインスタンスを生成します。
+		///		MainWindowクラスの新しいインスタンスを生成します。
 		/// </summary>
 		public MainWindow() {
 			InitializeComponent();
@@ -33,10 +33,10 @@ namespace FRCTimer3 {
 			}
 			catch( Exception e ) {
 				MessageBox.Show(
-					$"{mainViewModel.AppVer.ProductName}の初期化中にエラーが発生しました。\nアプリを終了します。\n（ 内容 : {e.Message} ）",
-                    $"{mainViewModel.AppVer.ProductName}",
+					$"{mainViewModel.AppVer.ProductName}の初期化中にエラーが発生しました。\nアプリを終了します。\n（ 追加情報 : {e.Message} ）",
+                    mainViewModel.AppVer.ProductName,
 					MessageBoxButton.OK,
-					MessageBoxImage.Exclamation
+					MessageBoxImage.Error
 				);
 				Close();
 			}
@@ -46,41 +46,43 @@ namespace FRCTimer3 {
 		///		チーム名リストを読み込んだ後のイベントです。
 		/// </summary>
 		private void mainViewModel_LoadTeamsListCompleted( object sender, NotifyResultEventArgs<LoadTeamsListResult, bool, bool> e ) {
+
+			string message = "";
+
 			switch( e.Result ) {
-				case LoadTeamsListResult.Succeed:
-					e.SucceedAction?.Invoke( true );
-					break;
 				case LoadTeamsListResult.FileNotFound:
-					MessageBox.Show(
-						$"チーム名リストファイル（ {TeamsModel.FileName} ）がないため、再作成します。",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
-                    e.FailedAction?.Invoke( true );
+					message = $"チーム名リストファイル（ {TeamsModel.FileName} ）がないため、再作成します。";
 					break;
 				case LoadTeamsListResult.InvaildList:
-					e.FailedAction?.Invoke(
-						MessageBox.Show(
-							$"チーム名リストファイル（ {TeamsModel.FileName} ）の内容が無効です。\nチーム名リストファイルを再作成しますか？",
-							$"{mainViewModel.AppVer.ProductName}",
-							MessageBoxButton.YesNo,
-							MessageBoxImage.Exclamation,
-							MessageBoxResult.No
-						) == MessageBoxResult.Yes
-					);
+					message = $"チーム名リストファイル（ {TeamsModel.FileName} ）の内容が無効です。\nチーム名リストファイルを再作成しますか？";
 					break;
 				case LoadTeamsListResult.OtherError:
-					e.FailedAction?.Invoke(
-						MessageBox.Show(
-							$"チーム名リストファイル（ {TeamsModel.FileName} ）を読み込みに失敗しました。\nチーム名リストファイルを再作成しますか？",
-							$"{mainViewModel.AppVer.ProductName}",
-							MessageBoxButton.YesNo,
-							MessageBoxImage.Exclamation,
-							MessageBoxResult.No
-						) == MessageBoxResult.Yes
-					);
+					message = $"チーム名リストファイル（ {TeamsModel.FileName} ）の読み込みに失敗しました。\nチーム名リストファイルを再作成しますか？";
 					break;
+			}
+
+			if( e.Result == LoadTeamsListResult.Succeed ) {
+				e.SucceedAction?.Invoke( true );
+			}
+			else if( e.Result == LoadTeamsListResult.FileNotFound ) {
+				MessageBox.Show(
+					message,
+					mainViewModel.AppVer.ProductName,
+					MessageBoxButton.OK,
+					MessageBoxImage.Exclamation
+				);
+				e.FailedAction?.Invoke( true );
+			}
+			else {
+				e.FailedAction?.Invoke(
+					MessageBox.Show(
+						message,
+						mainViewModel.AppVer.ProductName,
+						MessageBoxButton.YesNo,
+						MessageBoxImage.Exclamation,
+						MessageBoxResult.No
+					) == MessageBoxResult.Yes
+				);
 			}
 		}
 
@@ -91,7 +93,7 @@ namespace FRCTimer3 {
 			if( e.Result == SaveTeamsListResult.Failed ) {
 				MessageBox.Show(
 					$"チーム名リストのファイル（ {TeamsModel.FileName} ）を再作成できませんでした。",
-					$"{mainViewModel.AppVer.ProductName}",
+					mainViewModel.AppVer.ProductName,
 					MessageBoxButton.OK,
 					MessageBoxImage.Exclamation
 				);
@@ -107,7 +109,7 @@ namespace FRCTimer3 {
 				case SaveTeamsListResult.Succeed:
 					MessageBox.Show(
 						$"チーム名リストファイル（ {TeamsModel.FileName} ）を保存しました。",
-                        $"{mainViewModel.AppVer.ProductName}",
+                        mainViewModel.AppVer.ProductName,
 						MessageBoxButton.OK,
 						MessageBoxImage.Information
 					);
@@ -116,7 +118,7 @@ namespace FRCTimer3 {
 				case SaveTeamsListResult.Failed:
 					MessageBox.Show(
 						$"チーム名リストファイル（ {TeamsModel.FileName} ）を保存できませんでした。",
-						$"{mainViewModel.AppVer.ProductName}",
+						mainViewModel.AppVer.ProductName,
 						MessageBoxButton.OK,
 						MessageBoxImage.Exclamation
 					);
@@ -128,48 +130,37 @@ namespace FRCTimer3 {
 		///		時間定義ファイルを読み込んだ後のイベントです。
 		/// </summary>
 		private void mainViewModel_LoadTimeDefCompleted( object sender, NotifyResultEventArgs<LoadSettingsResult, bool, bool> e ) {
+
+			string message = "";
+
 			switch( e.Result ) {
 				case LoadSettingsResult.ValueOutOfRange:
-					MessageBox.Show(
-						$"時間定義ファイル（ {TimerModel.FileName} ）の読み込みに成功しましたが、一部で範囲外の値が含まれていました。\n（※範囲外の値の場合、デフォルト値を使用します。）",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
+					message = $"時間定義ファイル（ {TimerModel.FileName} ）の読み込みに成功しましたが、一部で範囲外の値が含まれていました。\n（※範囲外の値の場合、デフォルト値を使用します。）";
 					break;
 				case LoadSettingsResult.FileNotFound:
-					MessageBox.Show(
-						$"時間定義ファイル（ {TimerModel.FileName} ）が存在しないため、再作成しました。",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
-                    break;
+					message = $"時間定義ファイル（ {TimerModel.FileName} ）が存在しないため、再作成しました。";
+
+					break;
 				case LoadSettingsResult.InvaildFormat:
-					MessageBox.Show(
-						$"時間定義ファイル（ {TimerModel.FileName} ）の内容が無効なため、再作成しました。",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
+					message = $"時間定義ファイル（ {TimerModel.FileName} ）の内容が無効なため、再作成しました。";
 					break;
 				case LoadSettingsResult.JsonRemakeFailed:
-					MessageBox.Show(
-						$"時間定義ファイル（ {TimerModel.FileName} ）の再作成に失敗しました。",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
+					message = $"時間定義ファイル（ {TimerModel.FileName} ）の再作成に失敗しました。";
 					break;
 				case LoadSettingsResult.OtherError:
-					MessageBox.Show(
-						$"時間定義ファイル（ {TimerModel.FileName} ）の読み込み失敗したため、再作成しました。",
-						$"{mainViewModel.AppVer.ProductName}",
-						MessageBoxButton.OK,
-						MessageBoxImage.Exclamation
-					);
+					message = $"時間定義ファイル（ {TimerModel.FileName} ）の読み込み失敗したため、再作成しました。";
 					break;
 			}
+
+			if( e.Result != LoadSettingsResult.Succeed ) {
+				MessageBox.Show(
+					message,
+					mainViewModel.AppVer.ProductName,
+					MessageBoxButton.OK,
+					MessageBoxImage.Exclamation
+				);
+			}
+
 			e.SucceedAction?.Invoke( true );
 		}
 
@@ -192,21 +183,23 @@ namespace FRCTimer3 {
 		private void mainViewModel_ComfirmActtion( object sender, ComfirmEventArgs e ) {
 			if( MessageBox.Show(
 					e.Message,
-					$"{mainViewModel.AppVer.ProductName}",
+					mainViewModel.AppVer.ProductName,
 					MessageBoxButton.YesNo,
 					MessageBoxImage.Question,
 					MessageBoxResult.No
 				) == MessageBoxResult.Yes
-			) e.Callback?.Invoke();
+			) {
+				e.Callback?.Invoke();
+			}
 		}
 
 		/// <summary>
 		///		アプリを終了する時のイベントです。
 		/// </summary>
-		private void mainViewModel_ExitFRCTimer( object sender, CallbackEventArgs e ) {
+		private void mainViewModel_ExitFRCTimer( object sender, ComfirmEventArgs e ) {
 			if( MessageBox.Show(
 					"アプリを終了しますか？",
-					$"{mainViewModel.AppVer.ProductName}",
+					mainViewModel.AppVer.ProductName,
 					MessageBoxButton.YesNo,
 					MessageBoxImage.Question,
 					MessageBoxResult.No

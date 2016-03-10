@@ -9,10 +9,10 @@
 		Icon="/CRTimer;component/crtlogoi.ico"
 		WindowStyle="None" WindowState="Maximized">
 
-	<!-- Window用リソースです。 -->
+    <!-- Window用リソースです。 -->
     <Window.Resources>
 
-        <!-- ComboBoxのTextBoxで使用するStackPanelのスタイル -->		
+        <!-- ComboBoxのTextBoxで使用するStackPanelのスタイル -->
         <Style x:Key="TeamPanel" TargetType="StackPanel">
             <Setter Property="Margin" Value="20"/>
             <Setter Property="Orientation" Value="Vertical"/>
@@ -27,14 +27,14 @@
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextBlock.TextWrapping" Value="WrapWithOverflow"/>
         </Style>
-		
-		<!-- 枠線用スタイル -->
+
+        <!-- 枠線用スタイル -->
         <Style x:Key="ViewBorder" TargetType="Border">
             <Setter Property="BorderBrush" Value="White"/>
             <Setter Property="BorderThickness" Value="2"/>
         </Style>
 
-		<!-- コマンドボタン用スタイル -->
+        <!-- コマンドボタン用スタイル -->
         <Style x:Key="HybridButton1" TargetType="{x:Type Button}"
 			   BasedOn="{StaticResource HybridButton}">
             <Setter Property="Background" Value="Black"/>
@@ -42,10 +42,10 @@
             <Setter Property="FontSize" Value="24"/>
         </Style>
 
-		<!-- アプリの設定画面で使用するGrid用スタイル -->
+        <!-- アプリの設定画面で使用するGrid用スタイル -->
         <Style x:Key="SettingContent" TargetType="{x:Type Grid}">
-			<Setter Property="Margin" Value="15"/>
-		</Style>
+            <Setter Property="Margin" Value="15"/>
+        </Style>
 
         <!-- アプリの設定画面で使用する題名用スタイル -->
         <Style x:Key="CaptionBlock" TargetType="{x:Type TextBlock}">
@@ -71,9 +71,9 @@
             <Setter Property="Padding" Value="10"/>
         </Style>
 
-		<!-- ComboBoxのTextBoxで使用するチーム名のスタイル -->
+        <!-- ComboBoxのTextBoxで使用するチーム名のスタイル -->
         <Style x:Key="TeamNameCombo" TargetType="{x:Type TextBlock}">
-			<Setter Property="FontSize" Value="50"/>
+            <Setter Property="FontSize" Value="50"/>
             <Setter Property="Text" Value="{Binding TeamName}"/>
         </Style>
 
@@ -137,13 +137,13 @@
             </Viewbox>
         </DataTemplate>
 
-		<!-- Converterクラス -->
+        <!-- Converterクラス -->
         <local:BoolToCursorConverter x:Key="BoolToCursorVisibility"/>
         <local:BoolToVisibilityConverter x:Key="BoolToControlVisibility"/>
-    
-	</Window.Resources>
 
-	<!-- WindowのDataContextにMainViewModelクラスをセットします。 -->
+    </Window.Resources>
+
+    <!-- WindowのDataContextにMainViewModelクラスをセットします。 -->
     <Window.DataContext>
         <!-- XAMLでViewModelなどのクラスを宣言する時は以下のようにします。
 		　　	   x:Nameに指定した名前が変数名として分離コード（ C# ）で利用できます。
@@ -166,8 +166,8 @@
             <RowDefinition Height="9*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-		
-		<!-- メイン画面です。 -->
+
+        <!-- メイン画面です。 -->
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <!-- 上からチーム名、メッセージ＆残り時間表示 -->
@@ -187,18 +187,18 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- レッドチーム名のコンボボックスです。 -->
-                    <ComboBox Grid.Column="0"
-							  x:Name="redTeam"
-							  Style="{StaticResource HybridComboBox}"
-							  ItemsSource="{Binding TeamsList}"
-							  IsEnabled="{Binding CanSelectTeam}"
-							  SelectedIndex="{Binding RedTeamIndex}"
-							  MaxDropDownHeight="500">
+                    <local:ExComboBox Grid.Column="0"
+									  x:Name="redTeam"
+									  Style="{StaticResource ExComboBox}"
+									  ItemsSource="{Binding TeamsList}"
+									  IsSelectable="{Binding CanSelectTeam}"
+									  SelectedIndex="{Binding RedTeamIndex}"
+									  MaxDropDownHeight="500">
                         <!-- ItemTemplateSelectorを使って、TextBox側とPopup側でそれぞれ異なるDataTemplateをセットします。 -->
-                        <ComboBox.ItemTemplateSelector>
+						<local:ExComboBox.ItemTemplateSelector>
                             <local:RedTeamComboBoxDataTemplateSelector/>
-                        </ComboBox.ItemTemplateSelector>
-                    </ComboBox>
+                        </local:ExComboBox.ItemTemplateSelector>
+                    </local:ExComboBox>
 
                     <!-- 文字列「VS」を表示します。 -->
                     <Viewbox Grid.Column="1">
@@ -210,18 +210,18 @@
                     </Viewbox>
 
                     <!-- ブルーチーム名のコンボボックスです。 -->
-                    <ComboBox Grid.Column="2"
-							  x:Name="blueTeam"
-							  Style="{StaticResource HybridComboBox}"
-							  ItemsSource="{Binding TeamsList}"
-							  IsEnabled="{Binding CanSelectTeam}"
-							  SelectedIndex="{Binding BlueTeamIndex}"
-							  MaxDropDownHeight="500">
+                    <local:ExComboBox Grid.Column="2"
+									  x:Name="blueTeam"
+									  Style="{StaticResource ExComboBox}"
+									  ItemsSource="{Binding TeamsList}"
+									  IsSelectable="{Binding CanSelectTeam}"
+									  SelectedIndex="{Binding BlueTeamIndex}"
+									  MaxDropDownHeight="500">
                         <!-- ItemTemplateSelectorを使って、TextBox側とPopup側でそれぞれ異なるDataTemplateをセットします。 -->
-                        <ComboBox.ItemTemplateSelector>
+                        <local:ExComboBox.ItemTemplateSelector>
                             <local:BlueTeamComboBoxDataTemplateSelector/>
-                        </ComboBox.ItemTemplateSelector>
-                    </ComboBox>
+                        </local:ExComboBox.ItemTemplateSelector>
+                    </local:ExComboBox>
                 </Grid>
             </Border>
 
@@ -239,23 +239,23 @@
                     <!-- メッセージを表示します。 -->
                     <Viewbox Grid.Row="0">
                         <TextBlock Text="{Binding DisplayMessage}"
-						   Margin="3"
-						   Foreground="{Binding DisplayMessageColor}"
-						   TextAlignment="Center"
-						   VerticalAlignment="Center"/>
+								   Margin="3"
+								   Foreground="{Binding DisplayMessageColor}"
+								   TextAlignment="Center"
+								   VerticalAlignment="Center"/>
                     </Viewbox>
-					
+
                     <!-- 残り時間を表示表示します。 -->
                     <Viewbox Grid.Row="1">
                         <TextBlock Text="{Binding DisplayTimer}"
-						   Margin="3, 0"
-						   Foreground="{Binding DisplayTimerColor}"
-						   TextAlignment="Center"
-						   VerticalAlignment="Center"/>
+								   Margin="3, 0"
+								   Foreground="{Binding DisplayTimerColor}"
+								   TextAlignment="Center"
+								   VerticalAlignment="Center"/>
                     </Viewbox>
                 </Grid>
             </Border>
-			
+
         </Grid>
 
         <!-- Chronoir Robocon Timerの設定画面です。 -->
@@ -268,7 +268,7 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-				<!-- タイトル名を表示します。 -->
+                <!-- タイトル名を表示します。 -->
                 <StackPanel Grid.Row="0"
 							Style="{StaticResource TeamPanel}">
                     <TextBlock Grid.Row="0"
@@ -284,33 +284,33 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-					<!-- チーム名リストの編集エリアです。 -->
+                    <!-- チーム名リストの編集エリアです。 -->
                     <Grid Grid.Column="0"
 						  Style="{StaticResource SettingContent}">
                         <Grid.RowDefinitions>
-							<!-- 上からキャプション、リストビュー部 -->
+                            <!-- 上からキャプション、リストビュー部 -->
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-						<!-- キャプションです。 -->
+                        <!-- キャプションです。 -->
                         <TextBlock Grid.Row="0"
 								   Style="{StaticResource SubCaptionBlock}"
 								   Text="チーム名リストの編集"/>
-						
-						<!-- リストビュー部 -->
+
+                        <!-- リストビュー部 -->
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
-								<!-- 上からリストビュー、ボタンエリア -->
+                                <!-- 上からリストビュー、ボタンエリア -->
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-							<!-- チーム名リストを編集するリストビューです。 -->
+                            <!-- チーム名リストを編集するリストビューです。 -->
                             <ListView Grid.Row="0"
 									  Margin="10"
 									  SelectionMode="Single"
-									  ItemsSource="{Binding TeamsListSet, Mode=TwoWay}"
+									  ItemsSource="{Binding TeamsListSet}"
 									  SelectedIndex="{Binding SelectedTeam}">
                                 <ListView.ItemContainerStyle>
                                     <Style TargetType="ListViewItem">
@@ -334,15 +334,15 @@
                                                 <Setter Property="FontSize" Value="18"/>
                                             </Style>
                                         </GridView.ColumnHeaderContainerStyle>
-										<!-- チーム名、グループ名の文字列と情報編集、上下移動、削除ボタンを配置します。 -->
+                                        <!-- チーム名、グループ名の文字列と情報編集、上下移動、削除ボタンを配置します。 -->
                                         <GridViewColumn Header="チーム名"
 														Width="320">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding TeamName}"
 															   ToolTip="{Binding TeamName}"/>
-												</DataTemplate>
-											</GridViewColumn.CellTemplate>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
                                         <GridViewColumn Header="グループ名"
 														Width="320">
@@ -393,48 +393,48 @@
                                 </ListView.View>
                             </ListView>
 
-							<!-- ボタンエリアです。 -->
+                            <!-- ボタンエリアです。 -->
                             <StackPanel Grid.Row="1"
 										HorizontalAlignment="Center"
 										Orientation="Horizontal">
                                 <Button Style="{StaticResource FRCTimerButton}"
-										Width="200"
+										Width="Auto"
 										Content="チームを追加 (_A)"
 										Command="{Binding CMDAddTeam}"/>
                                 <Button Style="{StaticResource FRCTimerButton}"
-										Width="200"
+										Width="Auto"
 										Content="グループごとにソート (_G)"
 										Command="{Binding CMDGatherTeamsByGroup}"/>
                                 <Button Style="{StaticResource FRCTimerButton}"
-										Width="200"
+										Width="Auto"
 										Content="チーム名リストを復元 (_B)"
 										Command="{Binding CMDRollbackTeamsList}"/>
                                 <Button Style="{StaticResource FRCTimerButton}"
-										Width="200"
+										Width="Auto"
 										Content="チーム名リストを初期化 (_R)"
 										Command="{Binding CMDResetTeamsList}"/>
                             </StackPanel>
-							
+
                         </Grid>
                     </Grid>
 
-					<!-- Aboutです。 -->
+                    <!-- Aboutです。 -->
                     <Grid Grid.Column="1"
 						  Style="{StaticResource SettingContent}"
 						  TextBlock.Foreground="White">
                         <Grid.RowDefinitions>
-							<!-- 上からキャプション、タイトルロゴ、クレジット -->
-							<RowDefinition Height="Auto"/>
+                            <!-- 上からキャプション、タイトルロゴ、クレジット -->
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-						<!-- キャプションです。 -->
+                        <!-- キャプションです。 -->
                         <TextBlock Grid.Row="0"
 								   Style="{StaticResource SubCaptionBlock}"
 								   Text="このアプリについて"/>
-						
-						<!-- タイトルロゴです。 -->
+
+                        <!-- タイトルロゴです。 -->
                         <StackPanel Grid.Row="1"
 									Margin="5, 10">
                             <Image Source="/CRTimer;component/Resources/crtlogos.png"
@@ -448,8 +448,8 @@
 									   FontSize="20"
 									   Text="{Binding AppVer.ProductVersion, StringFormat=Ver. {0}}"/>
                         </StackPanel>
-						
-						<!-- クレジットです。 -->
+
+                        <!-- クレジットです。 -->
                         <StackPanel Grid.Row="2"
 									Margin="5, 10">
                             <Image Source="/CRTimer;component/Resources/Chronoir-netLogos.png"
@@ -464,7 +464,7 @@
 									   FontSize="18"
 									   Text="Author : Nia Tomonaka ( @nia_tn1012 )"/>
                         </StackPanel>
-						
+
                     </Grid>
 
                 </Grid>
@@ -485,8 +485,7 @@
                     <DataTemplate>
                         <Button Style="{StaticResource HybridButton1}"
 								Command="{Binding Command}"
-								Margin="20, 0"
-								MinWidth="260">
+								Margin="20, 0">
                             <Button.Content>
                                 <Viewbox>
                                     <Label Margin="20" Content="{Binding CommandName}" Foreground="White"/>
@@ -497,7 +496,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-		
+
     </Grid>
 </Window>
-
