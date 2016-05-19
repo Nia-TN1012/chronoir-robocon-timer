@@ -160,6 +160,10 @@ namespace FRCTimer3 {
 		FRCTimerSetting
 	}
 
+	enum TimerType {
+		SettingReady, Setting, PlayReady, Play
+	}
+
 	/// <summary>
 	///		タイマーの状態を表します。
 	/// </summary>

@@ -8,9 +8,9 @@ Chronoir Robocon Timerはロボコンなどで使用できるタイマーです�
 |アプリタイプ|Windowsデスクトップアプリ（WPFアプリ）|
 |作者名（著作権者）|智中 ニア（ Nia Tomonaka ）|
 |所属名|Chronoir.net|
-|バージョン|1.03.4.146|
+|バージョン|1.10.5.164|
 |作成日|2015/09/14|
-|更新日|2016/03/10|
+|更新日|2016/05/19|
 |種別|フリーソフトウェア（ BSDライセンス ）|
 |開発言語|C# 6.0|
 |対応OS|Windows Vista( SP2以降 ) / 7 / 8 / 8.1 / 10|
@@ -18,7 +18,7 @@ Chronoir Robocon Timerはロボコンなどで使用できるタイマーです�
 |著作権者|智中 ニア（ Nia Tomonaka ）|
 |再配布|可（【再配布】欄を参照してください ）|
 |転載|可|
-|ホームページ|http://chronoir.net/|
+|ホームページ|https://chronoir.net/|
 |GitHub|https://github.com/Nia-TN1012/chronoir-robocon-timer
 |Mailto|nia1012-tmnk(A/)outlook.jp（(A/)を@に変えてください。）
 |Twitter|[@nia_tn1012](https://twitter.com/nia_tn1012)|
@@ -52,7 +52,7 @@ CRTimerフォルダ
 * 本ソフトウェアは全画面で表示します。ディスプレイの解像度は1280×768以上を推奨します。
 
 ## ダウンロード＆インストール
-「[Chronoir Robocon Timer.zip](http://chronoir.net/wp-content/uploads/Apps/CRT/Chronoir%20Robocon%20Timer.zip)」をダウンロードし、任意の場所に解凍します。
+「[Chronoir Robocon Timer.zip](https://chronoir.net/wp-content/uploads/Apps/CRT/Chronoir%20Robocon%20Timer.zip)」をダウンロードし、任意の場所に解凍します。
 インストールは不要です。
 
 ## アンインストール
@@ -89,18 +89,21 @@ Sound Engine : http://soundengine.jp/
 
 ## リリースノート
 
+* Ver 1.10.5.164 ( 2016/05/19 )  
+    * KB00005 : アプリの動作を多少改善しました。
+
 * Ver 1.03.4.146 ( 2016/03/10 )  
-    * CRT-00003 : アプリの設定画面にて、「グループ名ごとにソート」ボタンを押しても動作しない不具合がありましたので、修正しました。
-    * CRT-00004 : ソースコードを少し最適化しました。
+    * KB00003 : アプリの設定画面にて、「グループ名ごとにソート」ボタンを押しても動作しない不具合がありましたので、修正しました。
+    * KB00004 : ソースコードを少し最適化しました。
 
 * Ver 1.02.3.141 ( 2016/01/06 )  
-    * CRT-00002 : アプリの動作を多少改善しました。
+    * KB00002 : アプリの動作を多少改善しました。
 
 * Ver 1.00.2.124 ( 2015/09/27 )  
-    * CRT-00001 : 画面の解像度によって、一部のボタンの文字列が隠れてしまうことがありましたので修正しました。
+    * KB00001 : 画面の解像度によって、一部のボタンの文字列が隠れてしまうことがありましたので修正しました。
 
 * Ver 1.00.1.120 ( 2015/09/14 )  
-    * CRT-00000 : 初版リリース
+    * KB00000 : 初版リリース
 
 ## teams.xmlのフォーマット
 teams.xmlは以下のような構成にする必要があります。

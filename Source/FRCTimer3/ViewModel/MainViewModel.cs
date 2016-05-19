@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -31,16 +30,6 @@ namespace FRCTimer3 {
 		};
 
 		/// <summary>
-		///		タイマーの状態を表します。
-		/// </summary>
-		private TimerState timerState = TimerState.Stop;
-
-		/// <summary>
-		///		DispatcherTimerは一定間隔ごとにイベントを発生させるクラスです。
-		/// </summary>
-		private DispatcherTimer dpTimer;
-
-		/// <summary>
 		///		アプリの情報を取得します。
 		/// </summary>
 		public FileVersionInfo AppVer { get; private set; }
@@ -64,35 +53,6 @@ namespace FRCTimer3 {
 
 		#endregion
 
-		#region 時間定義
-
-		/// <summary>
-		///		SettingReady / GameReady おいて、残り3秒を表します。
-		/// </summary>
-		private static TimeSpan ReadyLast3Seconds;
-
-		/// <summary>
-		///		SettingTimeにおいて、残り10秒を表します。
-		/// </summary>
-		private static TimeSpan SettingLast10Seconds;
-
-		/// <summary>
-		///		SettingTimeにおいて、残り3秒を表します。
-		/// </summary>
-		private static TimeSpan SettingLast3Seconds;
-
-		/// <summary>
-		///		PlayTimeにおいて、残り10秒を表します。
-		/// </summary>
-		private static TimeSpan PlayLast10Seconds;
-
-		/// <summary>
-		///		GameTimeにおいて、残り3秒を表します。
-		/// </summary>
-		private static TimeSpan PlayLast3Seconds;
-
-		#endregion
-
 		/// <summary>
 		///		Chronoir Robocon Timerの現在の状態を取得します。
 		/// </summary>
@@ -104,8 +64,9 @@ namespace FRCTimer3 {
 		/// </summary>
 		public MainViewModel() {
 			// TeamsModelのイベントハンドラに処理を登録します。
-			teamsModel.PropertyChanged += ( sender, e ) =>
-				PropertyChangedFromThis?.Invoke( this, new PropertyChangedEventArgs( e.PropertyName ) );
+			teamsModel.PropertyChanged +=
+				( sender, e ) =>
+					PropertyChangedFromThis?.Invoke( this, new PropertyChangedEventArgs( e.PropertyName ) );
 			teamsModel.LoadTeamsListCompleted += ( sender, e ) => {
 				RedTeamIndex = BlueTeamIndex = -1;
 				LoadTeamsListCompleted?.Invoke(
@@ -125,61 +86,54 @@ namespace FRCTimer3 {
 					)
 				);
 			};
-			teamsModel.ResetTeamsListCompleted += ( sender, e ) =>
-				ResetTeamsListCompleted?.Invoke(
-					this,
-					new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
-						e.Result,
-						// 初期化したら、チーム名選択のコンボボックスに反映させます。
-						_ => {
-							RedTeamIndex = 0;
-							BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
-							NotifyPropertyChanged( nameof( TeamsList ) );
-							NotifyPropertyChanged( nameof( RedTeamIndex ) );
-							NotifyPropertyChanged( nameof( BlueTeamIndex ) );
-						},
-						null
-					)
-				);
-			teamsModel.SaveTeamsListCompleted += ( sender, e ) =>
-				SaveTeamsListCompleted?.Invoke(
-					this,
-					new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
-						e.Result,
-						// 保存に成功したら、チーム名選択のコンボボックスに反映させます。
-						_ => {
-							RedTeamIndex = 0;
-							BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
-							NotifyPropertyChanged( nameof( TeamsList ) );
-							NotifyPropertyChanged( nameof( RedTeamIndex ) );
-							NotifyPropertyChanged( nameof( BlueTeamIndex ) );
-						},
-						null
-					)
-				);
+			teamsModel.ResetTeamsListCompleted +=
+				( sender, e ) =>
+					ResetTeamsListCompleted?.Invoke(
+						this,
+						new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
+							e.Result,
+							// 初期化したら、チーム名選択のコンボボックスに反映させます。
+							_ => {
+								RedTeamIndex = 0;
+								BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
+								NotifyPropertyChanged( nameof( TeamsList ) );
+								NotifyPropertyChanged( nameof( RedTeamIndex ) );
+								NotifyPropertyChanged( nameof( BlueTeamIndex ) );
+							},
+							null
+						)
+					);
+			teamsModel.SaveTeamsListCompleted +=
+				( sender, e ) =>
+					SaveTeamsListCompleted?.Invoke(
+						this,
+						new NotifyResultEventArgs<SaveTeamsListResult, bool, bool>(
+							e.Result,
+							// 保存に成功したら、チーム名選択のコンボボックスに反映させます。
+							_ => {
+								RedTeamIndex = 0;
+								BlueTeamIndex = TeamsList.Count >= 2 ? 1 : 0;
+								NotifyPropertyChanged( nameof( TeamsList ) );
+								NotifyPropertyChanged( nameof( RedTeamIndex ) );
+								NotifyPropertyChanged( nameof( BlueTeamIndex ) );
+							},
+							null
+						)
+					);
 
-			timerModel.LoadSettingsCompleted += ( sender, e ) =>
-				LoadSettingsCompleted?.Invoke(
-					this,
-					new NotifyResultEventArgs<LoadSettingsResult, bool, bool>(
-						e.Result,
-						_ => {
-							NotifyPropertyChanged( nameof( DisplayTimer ) );
-							ReadyLast3Seconds = TimerModel.ReadyTime - TimeSpan.FromSeconds( 3 );
-							SettingLast10Seconds = TimerModel.SettingTime - TimeSpan.FromSeconds( 10 );
-							SettingLast3Seconds = TimerModel.SettingTime - TimeSpan.FromSeconds( 3 );
-							PlayLast10Seconds = TimerModel.PlayTime - TimeSpan.FromSeconds( 10 );
-							PlayLast3Seconds = TimerModel.PlayTime - TimeSpan.FromSeconds( 3 );
-							message[FRCTimerState.Victory] = TimerModel.VictoryMessage;
-						},
-						null
-					)
-				);
-
-			// DispatcherTimerを設定します。
-			dpTimer = new DispatcherTimer( DispatcherPriority.Normal );
-			dpTimer.Interval = TimeSpan.FromMilliseconds( 30.0 );   // 30msec.間隔
-			dpTimer.Tick += DpTimer_Tick;
+			timerModel.LoadSettingsCompleted +=
+				( sender, e ) =>
+					LoadSettingsCompleted?.Invoke(
+						this,
+						new NotifyResultEventArgs<LoadSettingsResult, bool, bool>(
+							e.Result,
+							_ => {
+								NotifyPropertyChanged( nameof( DisplayTimer ) );
+								message[FRCTimerState.Victory] = TimerModel.VictoryMessage;
+							},
+							null
+						)
+					);
 
 			// FRCCommandSetModelにラベルとコマンドを追加します。
 			frcCommandSetModel = new FRCCommandSetModel(
@@ -205,7 +159,12 @@ namespace FRCTimer3 {
 		/// </summary>
 		public void Init() {
 			teamsModel.LoadTeamsList();
-			timerModel.LoadSettings();
+			timerModel.LoadSettings(
+				_modifyDisplayingTimer: MotifyDisplayingTimer,
+				_startSettingTime: StartSettingTime, _finishSettingTime: FinishSettingTime, _startPlayTime: StartPlayTime, _finishPlayTime: FinishPlayTime,
+				_notifyLast10sec: NotifyLast10sec, _finishAutoMachineLanchStartTime: NotifyFinishAutoMachineLanchStartTime,
+				_playReadySound: PlayReadySound, _playStartSound: PlayStartSound, _playLast3secSound: PlayLast3secSound, _playFinishSound: PlayFinishSound
+			);
 		}
 
 		#region TeamsModel関連
@@ -249,21 +208,14 @@ namespace FRCTimer3 {
 					case FRCTimerState.TeamSelect:
 						ts = TimerModel.SettingTime;
 						break;
-					case FRCTimerState.SettingReady:
-						// 秒単位に切り上げます。
-						ts = TimeSpan.FromSeconds( Math.Ceiling( ( TimerModel.ReadyTime - timerModel.Duration ).TotalSeconds ) );
-						break;
-					case FRCTimerState.SettingTime:
-						ts = TimerModel.SettingTime - timerModel.Duration;
-						break;
 					case FRCTimerState.PlayPrepairing:
 						ts = TimerModel.PlayTime;
 						break;
+					case FRCTimerState.SettingReady:
 					case FRCTimerState.PlayReady:
-						ts = TimeSpan.FromSeconds( Math.Ceiling( ( TimerModel.ReadyTime - timerModel.Duration ).TotalSeconds ) );
-						break;
+					case FRCTimerState.SettingTime:
 					case FRCTimerState.PlayTime:
-						ts = TimerModel.PlayTime - timerModel.Duration;
+						ts = timerModel.Duration;
 						break;
 				}
 
@@ -298,96 +250,105 @@ namespace FRCTimer3 {
 		public bool CanSelectTeam =>
 			NowState == FRCTimerState.TeamSelect;
 
+
+		#region TimerModelのイベント
+
 		/// <summary>
-		///		DispatcherTimerでのイベント処理です。
+		///		タイマーの残り時間を更新をした時に実行します。
 		/// </summary>
-		private void DpTimer_Tick( object sender, EventArgs e ) {
-
-			// セッティングタイム準備及び試合準備の時
-			if( NowState == FRCTimerState.SettingReady || NowState == FRCTimerState.PlayReady ) {
-				// 残り3秒でサウンドを鳴らします。
-				if( timerState == TimerState.Normal && timerModel.Duration > ReadyLast3Seconds ) {
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Ready ) );
-					timerState = TimerState.Last3sec;
-				}
-				// 残り0秒でセッティングタイム or 試合を開始します。
-				else if( timerModel.Duration >= TimerModel.ReadyTime ) {
-					if( NowState == FRCTimerState.SettingReady ) {
-						timerState = TimerState.Normal;
-						NowState = FRCTimerState.SettingTime;
-					}
-					else {
-						DisplayTimerColor = TimerModel.AutoMachineLanchTimeLimit > TimeSpan.Zero ? Brushes.Aqua : Brushes.White;
-						timerState = TimerState.AutoMachineStartTime;
-						NowState = FRCTimerState.PlayTime;
-					}
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Start ) );
-					timerModel.Start();
-					NotifyFRCTimerPropertyChanged();
-				}
-			}
-			// セッティングタイムの時
-			else if( NowState == FRCTimerState.SettingTime ) {
-				// 残り10秒でタイマー表示の色を変更します。
-				if( timerState == TimerState.Normal && timerModel.Duration >= SettingLast10Seconds ) {
-					timerState = TimerState.Last10sec;
-					DisplayTimerColor = Brushes.HotPink;
-					NotifyPropertyChanged( nameof( DisplayTimerColor ) );
-				}
-				// 残り3秒でサウンドを鳴らします。
-				else if( timerState == TimerState.Last10sec && timerModel.Duration >= SettingLast3Seconds ) {
-					timerState = TimerState.Last3sec;
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Last3 ) );
-				}
-				// 残り0秒でセッティングタイムを終了します。
-				else if( timerModel.Duration >= TimerModel.SettingTime ) {
-					dpTimer.Stop();
-					timerState = TimerState.Stop;
-					NowState = FRCTimerState.PlayPrepairing;
-					DisplayMessageColor = Brushes.Lime;
-					DisplayTimerColor = Brushes.White;
-					IsTimerRunning = false;
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Finish ) );
-					timerModel.Stop();
-					NotifyFRCTimerPropertyChanged();
-				}
-			}
-			// 試合中の時
-			else if( NowState == FRCTimerState.PlayTime ) {
-				// 自動機発進のタイムリミットの経過でタイマー表示の色を変更します。
-				if( timerState == TimerState.AutoMachineStartTime && timerModel.Duration >= TimerModel.AutoMachineLanchTimeLimit ) {
-					timerState = TimerState.Normal;
-					DisplayTimerColor = Brushes.White;
-					NotifyPropertyChanged( nameof( DisplayTimerColor ) );
-				}
-				// 残り10秒でタイマー表示の色を変更します。
-				if( ( timerState == TimerState.Normal || timerState == TimerState.AutoMachineStartTime ) && timerModel.Duration >= PlayLast10Seconds ) {
-					timerState = TimerState.Last10sec;
-					DisplayTimerColor = Brushes.HotPink;
-					NotifyPropertyChanged( nameof( DisplayTimerColor ) );
-				}
-				// 残り3秒でサウンドを鳴らします。
-				else if( timerState == TimerState.Last10sec && timerModel.Duration >= PlayLast3Seconds ) {
-					timerState = TimerState.Last3sec;
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Last3 ) );
-				}
-				// 残り0秒で試合を終了します。
-				else if( timerModel.Duration >= TimerModel.PlayTime ) {
-					dpTimer.Stop();
-					timerState = TimerState.Stop;
-					NowState = FRCTimerState.GameSet;
-					DisplayTimerColor = Brushes.White;
-					IsTimerRunning = false;
-					PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Finish ) );
-					timerModel.Stop();
-					NotifyFRCTimerPropertyChanged();
-				}
-			}
-
+		private void MotifyDisplayingTimer( object sender, EventArgs e ) {
 			NotifyPropertyChanged( nameof( DisplayTimer ) );
 		}
 
-		#region イベント関連
+		/// <summary>
+		///		セッティングタイムを開始時に実行します。
+		/// </summary>
+		private void StartSettingTime( object sender, EventArgs e ) {
+			NowState = FRCTimerState.SettingTime;
+			timerModel.Start( TimerType.Setting );
+			NotifyFRCTimerPropertyChanged();
+		}
+
+		/// <summary>
+		///		セッティングタイムを終了時に実行します。
+		/// </summary>
+		private void FinishSettingTime( object sender, EventArgs e ) {
+			NowState = FRCTimerState.PlayPrepairing;
+			DisplayMessageColor = Brushes.Lime;
+			DisplayTimerColor = Brushes.White;
+			IsTimerRunning = false;
+			timerModel.Stop();
+			NotifyFRCTimerPropertyChanged();
+		}
+
+		/// <summary>
+		///		試合開始時に実行します。
+		/// </summary>
+		private void StartPlayTime( object sender, EventArgs e ) {
+			DisplayTimerColor = TimerModel.AutoMachineLanchTimeLimit > TimeSpan.Zero ? Brushes.Aqua : Brushes.White;
+			NowState = FRCTimerState.PlayTime;
+			timerModel.Start( TimerType.Play );
+			NotifyFRCTimerPropertyChanged();
+		}
+
+		/// <summary>
+		///		試合終了時に実行します。
+		/// </summary>
+		private void FinishPlayTime( object sender, EventArgs e ) {
+			NowState = FRCTimerState.GameSet;
+			DisplayTimerColor = Brushes.White;
+			IsTimerRunning = false;
+			timerModel.Stop();
+			NotifyFRCTimerPropertyChanged();
+		}
+
+		/// <summary>
+		///		残り時間が10秒になった時に実行します。
+		/// </summary>
+		private void NotifyLast10sec( object sender, EventArgs e ) {
+			DisplayTimerColor = Brushes.HotPink;
+			NotifyPropertyChanged( nameof( DisplayTimerColor ) );
+		}
+
+		/// <summary>
+		///		自動機の発進時間が終了した時に実行します。
+		/// </summary>
+		private void NotifyFinishAutoMachineLanchStartTime( object sender, EventArgs e ) {
+			DisplayTimerColor = Brushes.White;
+			NotifyPropertyChanged( nameof( DisplayTimerColor ) );
+		}
+
+		/// <summary>
+		///		
+		/// </summary>
+		private void PlayReadySound( object sender, EventArgs e ) {
+			PlaySoundEffect?.Invoke( sender, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Ready ) );
+		}
+
+		/// <summary>
+		///		
+		/// </summary>
+		private void PlayStartSound( object sender, EventArgs e ) {
+			PlaySoundEffect?.Invoke( sender, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Start ) );
+		}
+
+		/// <summary>
+		///		
+		/// </summary>
+		private void PlayLast3secSound( object sender, EventArgs e ) {
+			PlaySoundEffect?.Invoke( sender, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Last3 ) );
+		}
+
+		/// <summary>
+		///		
+		/// </summary>
+		private void PlayFinishSound( object sender, EventArgs e ) {
+			PlaySoundEffect?.Invoke( sender, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Finish ) );
+		}
+
+		#endregion
+
+		#region イベントハンドラー
 
 		/// <summary>
 		///		チーム名リストを読み込んだ後に発生します。
@@ -424,6 +385,8 @@ namespace FRCTimer3 {
 		/// </summary>
 		public event FRCSoundEffectTypeEventHandler PlaySoundEffect;
 
+		#endregion
+
 		/// <summary>
 		///		アプリのメイン画面で使用しているプロパティの変更をまとめて通知します。
 		/// </summary>
@@ -436,8 +399,6 @@ namespace FRCTimer3 {
 			NotifyPropertyChanged( nameof( IsTimerRunning ) );
 			NotifyPropertyChanged( nameof( CanSelectTeam ) );
 		}
-
-		#endregion
 
 		#region コマンド関連
 
@@ -487,11 +448,10 @@ namespace FRCTimer3 {
 		/// </summary>
 		private void StartSetting() {
 			NowState = FRCTimerState.SettingReady;
-			timerState = TimerState.Normal;
 			IsTimerRunning = true;
-			timerModel.Start();
+			timerModel.Start( TimerType.SettingReady );
 			NotifyFRCTimerPropertyChanged();
-			dpTimer.Start();
+			//dpTimer.Start();
 		}
 
 		#endregion
@@ -540,11 +500,10 @@ namespace FRCTimer3 {
 		/// </summary>
 		private void StartPlay() {
 			NowState = FRCTimerState.PlayReady;
-			timerState = TimerState.Normal;
 			IsTimerRunning = true;
-			timerModel.Start();
+			timerModel.Start( TimerType.PlayReady );
 			NotifyFRCTimerPropertyChanged();
-			dpTimer.Start();
+			//dpTimer.Start();
 		}
 
 		#endregion
@@ -578,7 +537,7 @@ namespace FRCTimer3 {
 		private void CancelOperation() {
 			// タイマーが動作している場合、停止します。
 			if( IsTimerRunning ) {
-				dpTimer.Stop();
+				//dpTimer.Stop();
 				timerModel.Stop();
 				IsTimerRunning = false;
 			}
@@ -653,7 +612,7 @@ namespace FRCTimer3 {
 		/// </summary>
 		private void ChangeToVictory() {
 			if( IsTimerRunning ) {
-				dpTimer.Stop();
+				//dpTimer.Stop();
 				timerModel.Stop();
 				IsTimerRunning = false;
 			}
@@ -709,7 +668,7 @@ namespace FRCTimer3 {
 		///		アプリを終了します。
 		/// </summary>
 		private void Close() {
-			dpTimer.Stop();
+			//dpTimer.Stop();
 			timerModel.Stop();
 			PlaySoundEffect?.Invoke( this, new FRCSoundEffectTypeEventArgs( FRCSoundEffectType.Stop ) );
 		}
