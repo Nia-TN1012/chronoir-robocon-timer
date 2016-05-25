@@ -130,16 +130,15 @@ namespace FRCTimer3 {
 			try {
 				XDocument xd = new XDocument();
 				xd.Add( new XComment( "チーム名リスト" ) );
-				XElement xroot = new XElement( "teams" );
-				foreach( var i in newTeamList ) {
-					xroot.Add(
-						new XElement( "team",
-							new XAttribute( "name", i.TeamName ),
-							new XAttribute( "group", i.GroupName )
+				var teams = new XElement( "teams",
+					newTeamList.Select(
+						team => new XElement( "team",
+							new XAttribute( "name", team.TeamName ),
+							new XAttribute( "group", team.GroupName )
 						)
-					);
-				}
-				xd.Add( xroot );
+					)
+				);
+				xd.Add( teams );
 				xd.Save( FileName );
 
 			}
