@@ -8,9 +8,9 @@ Chronoir Robocon Timerはロボコンなどで使用できるタイマーです�
 |アプリタイプ|Windowsデスクトップアプリ（WPFアプリ）|
 |作者名（著作権者）|智中 ニア（ Nia Tomonaka ）|
 |所属名|Chronoir.net|
-|バージョン|1.10.5.164|
+|バージョン|1.11.6.170|
 |作成日|2015/09/14|
-|更新日|2016/05/19|
+|更新日|2016/05/25|
 |種別|フリーソフトウェア（ BSDライセンス ）|
 |開発言語|C# 6.0|
 |対応OS|Windows Vista( SP2以降 ) / 7 / 8 / 8.1 / 10|
@@ -52,7 +52,7 @@ CRTimerフォルダ
 * 本ソフトウェアは全画面で表示します。ディスプレイの解像度は1280×768以上を推奨します。
 
 ## ダウンロード＆インストール
-「[Chronoir Robocon Timer.zip](https://chronoir.net/wp-content/uploads/Apps/CRT/Chronoir%20Robocon%20Timer.zip)」をダウンロードし、任意の場所に解凍します。
+「[Chronoir Robocon Timer.zip](https://chronoir.net/wp-content/uploads/Apps/Chronoir%20Robocon%20Timer.zip)」をダウンロードし、任意の場所に解凍します。
 インストールは不要です。
 
 ## アンインストール
@@ -88,6 +88,9 @@ Sound Engine : http://soundengine.jp/
 本ソフトウェアを使用している皆様に、感謝いたします。
 
 ## リリースノート
+
+* Ver 1.11.6.170 ( 2016/05/25 )  
+    * KB00005 : チーム名リストの保存の処理を少し改善しました。
 
 * Ver 1.10.5.164 ( 2016/05/19 )  
     * KB00005 : アプリの動作を多少改善しました。
